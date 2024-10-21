@@ -192,19 +192,40 @@ class MainApp(App):
                 
         def butt_del(i,j):
             but[i, j].on_press=lambda: delete(i, j)
-        def delete(r, c):
-            print(str(r) + '-' + str(c)) 
-            print(entry[r, c-2].text)           
-            sotrudnik =entry[r, c-2].text
-            for i in range(24):
-                if entry[i+1,1].text == sotrudnik:
-                    entry[i+1,1].text = ''
-            with open("tabel_sotrudnikov.txt", "r") as f:
-                lines = f.readlines()
-                with open("tabel_sotrudnikov.txt", "w") as f:
-                    for line in lines:
-                        if line.split()[2] != sotrudnik:
-                            f.write(line)
+        def delete(r, c):      
+            if entry[r,c-2].text == '':
+                pass
+            else:    
+                h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
+                an_layout = BoxLayout(orientation="horizontal", padding=1, size_hint=(1, 1))
+                yes = Button(text='да', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)
+                no = Button(text='нет', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)        
+                an_layout.add_widget(yes)
+                an_layout.add_widget(no)
+                yes.on_press=lambda: (dele(r, c), close())
+                no.on_press=lambda: (close())
+                def close():
+                    popupWindow.dismiss()        
+                popupWindow = Popup(title="Вы уверены, что хотите удалить? ", size_hint=(None,None),size=(400,220), pos_hint={'x': 200.0 / Window.width, 'y': 800.0 / Window.height})
+                h_layout.add_widget(an_layout)
+                popupWindow.add_widget(h_layout)
+                popupWindow.open()
+                def dele(r, c):
+                    print(str(r) + '-' + str(c)) 
+                    print(entry[r, c-2].text)           
+                    sotrudnik =entry[r, c-2].text
+                    for i in range(24):
+                        if entry[i+1,1].text == sotrudnik:
+                            entry[i+1,1].text = ''
+                    with open("tabel_sotrudnikov.txt", "r") as f:
+                        lines = f.readlines()
+                        with open("tabel_sotrudnikov.txt", "w") as f:
+                            for line in lines:
+                                if line.split()[2] != sotrudnik:
+                                    f.write(line)
+                    hide_spisok()
+                    show_spisok()
+            
             '''with open('tabel_sotrudnikov.txt', 'a+') as k:
                 k.write('\n' + sotrudnik)
                 sotrud[r] = sotrudnik
@@ -214,6 +235,7 @@ class MainApp(App):
                 popupWindow.open()  '''      
             
         def butt_add(i,j):
+            
             but[i, j].on_press=lambda: add(i, j)
         def add(r, c):
             print(str(r) + '-' + str(c)) 
@@ -227,15 +249,20 @@ class MainApp(App):
             hours = ''
             for i in range(32):              
                 hours = hours + '-'                
-            sotrudnik =entry[r, c-1].text     
-            
-            with open('tabel_sotrudnikov.txt', 'a+') as k:
-                k.write(m_y + ' ' + sotrudnik + ' ' +  hours +'\n' )
-                if crsp == False:
-                    label = Label(text='sotrudnik успешно сохранен!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
-                    popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
-                    popupWindow.add_widget(label)
-                    popupWindow.open()    
+            #sotrudnik =entry[r, c-1].text     
+            with open('tabel_sotrudnikov.txt', 'r') as f:              
+                    if sotrudnik in f.read():
+                        lay1.text = sotrudnik + '\nв списке\nуже есть'
+                        if sotrudnik == '':
+                            lay1.text = ''
+                    else:
+                        with open('tabel_sotrudnikov.txt', 'a+') as k:
+                            k.write(m_y + ' ' + sotrudnik + ' ' +  hours +'\n' )
+                            if self.crsp == False:
+                                label = Label(text='sotrudnik успешно сохранен!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
+                                popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
+                                popupWindow.add_widget(label)
+                                popupWindow.open()        
         but = {}
         entry = {}
         sotrud= {}
@@ -267,12 +294,13 @@ class Th_head(TabbedPanelHeader):
         layoutgr= GridLayout(cols=1, spacing=0, size_hint=(1, None))
         layout = GridLayout(rows=1,  spacing=0, size_hint_x=None)#, size_hint_x=None)
         #new_spisok = Button(text='[b]>>[/b]', font_size=22, size_hint=(.87, 1), markup=True)
-        copy = Button(text='сохранить', markup=True, font_size=28, size_hint=(1, 1), color=[1, 1, 0, 1])
+        copy = Button(text='', markup=True, font_size=28, size_hint=(1, 1), color=[1, 1, 0, 1])
         clear = Button(text='очистить', font_size=28, size_hint=(1, 1))
         laybutton=BoxLayout(size_hint=(1, .46))
         #laybutton= FloatLayout(size=(100, 200))
         lay1.add_widget(copy)
         lay1.add_widget(clear)
+        clear.on_press = lambda: clear_all()
         #lay1.add_widget(laybutton)
         #laytop.add_widget(new_spisok)
         # Make sure the height is such that there is something to scroll.
@@ -323,8 +351,17 @@ class Th_head(TabbedPanelHeader):
         dropdownyear.bind(on_select=lambda instance, x: setattr(yearbutton, 'text', x))  
         laybutton.add_widget(mainbutton)    
         laybutton.add_widget(yearbutton) 
+        def clear_all():
+            for i in range(12):
+                entry[i+1, 1].text = ''
+                for j in range(32):
+                    num[j, i+1].text= ''
+                    
         def vivod_sotrudnikov():
             month = mainbutton.text
+            year = yearbutton.text
+            data = month + ' ' + year + 'г.'
+            print('data=', data)
             j = 0
             with open('tabel_sotrudnikov.txt', 'r') as k:
                 f =k.read() 
@@ -333,13 +370,15 @@ class Th_head(TabbedPanelHeader):
                 for i in range(len(sp_all)):
                     s = sp_all[i].split()
                     print(s)
-                    if s[0] == month:
-                        j = j+1                      
-                        entry[j,1].text = s[2]
-                        h = s[3].split('-')
-                        print(h)
-                        for i1 in range(32):
-                            num[i1, j].text = h[i1]
+                    print(s[0] + ' ' +s[1])
+                    if data == s[0] + ' ' +s[1]:                       
+                            j = j+1                      
+                            entry[j,1].text = s[2]
+                            h = s[3].split('-')
+                            print(h)
+                            for i1 in range(32):
+                                num[i1, j].text = h[i1]
+                        
                          
                             
                         
