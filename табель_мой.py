@@ -63,7 +63,7 @@ class MainApp(App):
         month = {'01': 'январь','02': 'февраль', '10':'октябрь'}
         m_y = month[data[0:2]]+' 20' + data[3:5] + 'г.'
         y = ' 20' + data[3:5]
-        month_choose = False
+        self.month_choose = False
         
         dropdown = DropDown(size_hint_y=None, size_hint_x=None, height=44, width=100)
         dropdownyear = DropDown(size_hint_y=None, size_hint_x=None, height=44, width=100)
@@ -106,9 +106,10 @@ class MainApp(App):
         laybutton.add_widget(yearbutton) 
         
         def clear_all():
+            #global month_choose
             yearbutton.text = 'выберите год'
             mainbutton.text = 'выберите месяц'
-            month_choose = False
+            self.month_choose = False
             for i in range(4):
                #entry[i+1, 1].text = ''
                 itog[i+1].text = ''
@@ -121,46 +122,73 @@ class MainApp(App):
                             num[j,i].text = 'Итог'
                     
         def vivod_sotrudnikov():
+            #global month_choose
             mo= { 'январь':'1','февраль':'2', 'март':'3', 'апрель':'4',  'май':'6',  'июнь':'6', 'июль':'7',  'август':'8', 'сентябрь':'9','октябрь':'10', 'ноябрь':'11', 'декабрь':'12'}       
-            day_week = {'1':'п', '2':'в','3':'с','4':'ч','5':'пт','6':'су','7':'во'}
+            day_week = {'1':'пн', '2':'вт','3':'ср','4':'чт','5':'пт','6':'сб','7':'вс'}
             month = mainbutton.text            
             year = yearbutton.text
             data = month + ' ' + year + 'г.'
             print('data=', data)
             j = 0
-            
-            with open('tabel_sotrudnikov.txt', 'r') as k:
-                f =k.read() 
-                sp_all = f.splitlines()
-                print(sp_all)
-                for i in range(len(sp_all)):
-                    s = sp_all[i].split()
-                    print(s)
-                    print(s[0] + ' ' +s[1])
-                    if data == s[0] + ' ' +s[1]:                       
-                            j = j+1                      
-                            entry[j,1].text = s[2]
-                            h = s[3].split('-')
-                            print(h)
-                            for i1 in range(32):
-                                if i1<31:
-                                    day = datetime.datetime(int(year), int(mo[month]), i1+1)
-                                    #da = day.strftime("%d-%m-%Y")
-                                    #print(day)     
-                                    weekend = day.isoweekday()  
-                                    #print(day.isoweekday())                         
-                                    num[i1, j].text = h[i1]
-                                    
-                                    if weekend == 6 or weekend == 7:
-                                        num[i1, j].background_color= [1,1,0.5,1]
-                                if i1 == 31:
-                                    itog[j].text = h[i1]
-                for i1 in range(31):
-                    if year != 'выберите год' and  month != 'выберите месяц':
-                        day = datetime.datetime(int(year), int(mo[month]), i1+1)
-                        weekend = day.isoweekday()  
-                        num[i1,0].text = num[i1,0].text + day_week[str(weekend)]                 
-                         
+            if year != 'выберите год' and  month != 'выберите месяц':
+                #clear_all()
+                py=year
+                pm=month
+                with open('tabel_sotrudnikov.txt', 'r') as k:
+                    f =k.read() 
+                    if data in f:
+                        print('data estj')                    
+                        sp_all = f.splitlines()
+                        print(sp_all)
+                        if self.month_choose == False:
+                            for i in range(len(sp_all)):
+                                s = sp_all[i].split()
+                                print(s)
+                                print(s[0] + ' ' +s[1])
+                                if data == s[0] + ' ' +s[1]:                       
+                                        j = j+1                      
+                                        entry[j,1].text = s[2]
+                                        h = s[3].split('-')
+                                        print(h)
+                                        for i1 in range(32):
+                                            if i1<31:
+                                                day = datetime.datetime(int(year), int(mo[month]), i1+1)
+                                                #da = day.strftime("%d-%m-%Y")
+                                                #print(day)     
+                                                weekend = day.isoweekday()  
+                                                #print(day.isoweekday())                         
+                                                num[i1, j].text = h[i1]
+                                                
+                                                if weekend == 6 or weekend == 7:
+                                                    num[i1, j].background_color= [1,1,0.5,1]
+                                            if i1 == 31:
+                                                itog[j].text = h[i1]
+                            for i1 in range(31):                               
+                                day = datetime.datetime(int(year), int(mo[month]), i1+1)
+                                weekend = day.isoweekday()  
+                                num[i1,0].text = num[i1,0].text + day_week[str(weekend)] 
+                            self.month_choose = True
+                        else:
+                            #yearbutton.text = 'выберите год' 
+                            #mainbutton.text  = 'выберите месяц'
+                            y =yearbutton.text
+                            m =mainbutton.text 
+                            clear_all()
+                            yearbutton.text=y
+                            mainbutton.text=m 
+                            vivod_sotrudnikov()
+                            '''label = Label(text='выберите  ' + data, font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
+                            popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
+                            popupWindow.add_widget(label)
+                            popupWindow.open()       '''   
+                                
+                    else:
+                        clear_all()
+                        label = Label(text='на '+data+'  нет табеля!\nсоздать табель на ' + data+ '?', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
+                        popupWindow = Popup(title='внимание!',  size_hint=(None, None),size=(700,220), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
+                        popupWindow.add_widget(label)
+                        popupWindow.open()                 
+                             
                          
                             
                         
