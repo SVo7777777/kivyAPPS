@@ -25,22 +25,40 @@ class LabelX(Label):
     def update_rect(self, *args):
         self.rect.pos = self.pos
         self.rect.size = self.size     
+        
+class BoxLayoutX(BoxLayout):
+    def set_bgcolor(self,r,b,g,o):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(r,g,b,o)
+            self.rect = Rectangle(pos=self.pos,size=self.size)
+        self.bind(pos=self.update_rect,
+                  size=self.update_rect)
+    def update_rect(self, *args):
+        self.rect.pos = self.pos
+        self.rect.size = self.size     
            
 class MainApp(App):
     def build(self):
         col1 = 0
         col2= 5
         lay= BoxLayout(orientation="vertical", padding=0, size_hint=(1, 1))
-        lay0 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .5))
-        laytop= BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .3))
-        lay1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .47))
+        lay0 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, 1))
+        lay0.set_bgcolor(0.8,.8,1,1)
+        laytop= BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
+        lay1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .3))
         layoutgr= GridLayout(cols=1, spacing=0, size_hint=(1, None))
         layout_itog = GridLayout(cols=1, spacing=0, size_hint=(.2, 1))
         layout = GridLayout(rows=1,  spacing=0, size_hint_x=None)#, size_hint_x=None)
         #new_spisok = Button(text='[b]>>[/b]', font_size=22, size_hint=(.87, 1), markup=True)
         copy = Button(text='', markup=True, font_size=28, size_hint=(1, 1), color=[1, 1, 0, 1])
-        clear = Button(text='очистить', font_size=28, size_hint=(1, 1))
-        laybutton=BoxLayout(size_hint=(1, .46))
+        clear = Button(text='очистить', font_size=40, size_hint=(1, 1))
+        
+        laybutton=BoxLayoutX(size_hint=(1, .3))
+        laybutton.set_bgcolor(.8,.8,1,1)
+        lab1 = LabelX(halign="center", text='', font_size=50, size_hint=(1, .5), color=[0, 0 ,0, 1])
+        lab1.set_bgcolor(.8,.8,1,1)
+        #laybutton.add_widget(lab1)
         #laybutton= FloatLayout(size=(100, 200))
         lay1.add_widget(copy)
         lay1.add_widget(clear)
@@ -65,14 +83,14 @@ class MainApp(App):
         y = ' 20' + data[3:5]
         self.month_choose = False
         
-        dropdown = DropDown(size_hint_y=None, size_hint_x=None, height=44, width=100)
-        dropdownyear = DropDown(size_hint_y=None, size_hint_x=None, height=44, width=100)
+        dropdown = DropDown(size_hint_y=1, size_hint_x=1, height=44, width=100)
+        dropdownyear = DropDown(size_hint_y=1, size_hint_x=1, height=44, width=100)
         for index in ['январь', 'февраль','март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь']:
             # When adding widgets, we need to specify the height manually
             # (disabling the size_hint_y) so the dropdown can calculate
             # the area it needs.
         
-            btn = Button(text=index, size_hint_y=None, size_hint_x=None, height=44, width=100)
+            btn = Button(text=index, size_hint_y=None, size_hint_x=None, font_size=40, height=64, width=200)
         
             # for each button, attach a callback that will call the select() method
             # on the dropdown. We'll pass the text of the button as the data of the
@@ -94,9 +112,9 @@ class MainApp(App):
         # one last thing, listen for the selection in the dropdown list and
         # assign the data to the button text.
         dropdown.bind(on_select=lambda instance, x: setattr(mainbutton, 'text', x))  
-        years = [int(y), int(y)+1, int(y)+2, int(y)+3, int(y)+4]
+        years = [int(y)-2, int(y)-1, int(y), int(y)+1, int(y)+2, int(y)+3, int(y)+4]
         for year in years:
-            btn1= Button(text=str(year), size_hint_y=None, size_hint_x=None, height=44, width=100)
+            btn1= Button(text=str(year), size_hint_y=None, size_hint_x=None, font_size=40,height=64, width=200)
             btn1.bind(on_release=lambda btn1: (dropdownyear.select(btn1.text), vivod_sotrudnikov()))
             dropdownyear.add_widget(btn1)
         yearbutton = Button(text='выберите год', font_size=40, size_hint=(.6, .6))
@@ -105,6 +123,22 @@ class MainApp(App):
         laybutton.add_widget(mainbutton)    
         laybutton.add_widget(yearbutton) 
         
+        def create_tabel():
+            m=mainbutton.text
+            y=yearbutton.text
+            m_y = m + ' ' + y + 'г.'
+            hours = ''
+            for i in range(31):              
+                hours = hours + '-'        
+            with open('tabel_sotrudnikov.txt', 'a+') as k:
+                                k.write(m_y + ' ' + 'мои_часы' + ' ' +  hours +'\n' )
+                                k.write(m_y + ' ' + 'часы_1' + ' ' +  hours +'\n' )
+                                k.write(m_y + ' ' + 'часы_2' + ' ' +  hours +'\n' )
+                                k.write(m_y + ' ' + 'часы_3' + ' ' +  hours +'\n' )
+                                label = Label(text='табель на ' + m_y + '\nуспешно создан!', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
+                                popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 50.0 / Window.width, 'y': 600.0 / Window.height})
+                                popupWindow.add_widget(label)
+                                popupWindow.open()    
         def clear_all():
             #global month_choose
             yearbutton.text = 'выберите год'
@@ -118,7 +152,7 @@ class MainApp(App):
                     num[j, i+1].background_color= [1,1,1,1]
                     if i == 0:
                         num[j,i].text = str(j+1)
-                        if j == 32:
+                        if j == 31:
                             num[j,i].text = 'Итог'
                     
         def vivod_sotrudnikov():
@@ -152,21 +186,27 @@ class MainApp(App):
                                         print(h)
                                         for i1 in range(32):
                                             if i1<31:
-                                                day = datetime.datetime(int(year), int(mo[month]), i1+1)
-                                                #da = day.strftime("%d-%m-%Y")
-                                                #print(day)     
-                                                weekend = day.isoweekday()  
-                                                #print(day.isoweekday())                         
-                                                num[i1, j].text = h[i1]
-                                                
+                                                try:
+                                                    day = datetime.datetime(int(year), int(mo[month]), i1+1)
+                                                    #da = day.strftime("%d-%m-%Y")
+                                                    #print(day)     
+                                                    weekend = day.isoweekday()  
+                                                    #print(day.isoweekday())                         
+                                                    num[i1, j].text = h[i1]
+                                                except ValueError: #day is out of range for month
+                                                    pass
                                                 if weekend == 6 or weekend == 7:
                                                     num[i1, j].background_color= [1,1,0.5,1]
                                             if i1 == 31:
                                                 itog[j].text = h[i1]
-                            for i1 in range(31):                               
-                                day = datetime.datetime(int(year), int(mo[month]), i1+1)
-                                weekend = day.isoweekday()  
-                                num[i1,0].text = num[i1,0].text + day_week[str(weekend)] 
+                                                num[i1, j].text = h[i1]
+                            for i1 in range(31):       
+                                try:                        
+                                    day = datetime.datetime(int(year), int(mo[month]), i1+1)
+                                    weekend = day.isoweekday()  
+                                    num[i1,0].text = num[i1,0].text + day_week[str(weekend)] 
+                                except ValueError:
+                                    pass
                             self.month_choose = True
                         else:
                             #yearbutton.text = 'выберите год' 
@@ -182,17 +222,23 @@ class MainApp(App):
                             popupWindow.add_widget(label)
                             popupWindow.open()       '''   
                                 
-                    else:
-                        clear_all()
-                        label = Label(text='на '+data+'  нет табеля!\nсоздать табель на ' + data+ '?', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
-                        popupWindow = Popup(title='внимание!',  size_hint=(None, None),size=(700,220), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
-                        popupWindow.add_widget(label)
-                        popupWindow.open()                 
-                             
-                         
-                            
-                        
-        
+                    else:                        
+                        h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
+                        an_layout = BoxLayout(orientation="horizontal", padding=1, size_hint=(1, 1))
+                        label = Label(text='на '+data+'  нет табеля!\nсоздать табель на ' + data+ '?', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])     
+                        yes = Button(text='да', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)
+                        no = Button(text='нет', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)        
+                        an_layout.add_widget(yes)
+                        an_layout.add_widget(no)
+                        yes.on_press=lambda: (create_tabel(), close())
+                        no.on_press=lambda: (clear_all(), close())
+                        def close():
+                            popupWindow.dismiss()        
+                        popupWindow = Popup(title="внимание!", size_hint=(None,None),size=(750,320), pos_hint={'x': 40.0 / Window.width, 'y': 600.0 / Window.height})
+                        h_layout.add_widget(label)
+                        h_layout.add_widget(an_layout)
+                        popupWindow.add_widget(h_layout)
+                        popupWindow.open()                                                                                                                                                              
         def setka(i1, i2):
             #для списка сотрудников
             for i in range(i1, i2):
@@ -246,7 +292,7 @@ class MainApp(App):
                 layout.add_widget(h_layout) 
             for i in range(5):
                   #itog[i]= TextInput(halign="center", cursor_color=[0, 0, 1, 1], font_size=50,height=61, #size_hint=(None, None),  width=100, multiline=False, text='')#,  size_hint_x=1, size_hint_y=1) 
-                  itog[i] = LabelX(halign="right", height=61, width= 80, font_size=30, size_hint=(None, None), color=[0, 0 ,0, 1])
+                  itog[i] = LabelX(halign="right", height=61, width= 80, font_size=30, size_hint=(None, None), color=[1, 0 ,0, 1])
                   itog[i].set_bgcolor(1,1,1,1) 
                   layout_itog.add_widget(itog[i]) 
                   if i%2==0:
@@ -260,7 +306,10 @@ class MainApp(App):
             but[i, j].on_press=lambda: add(i, j)
         def add(r, c):
             print(str(r) + '-' + str(c)) 
-            print(m_y)
+            #print(m_y)
+            m=mainbutton.text
+            y=yearbutton.text
+            m_y = m + ' ' + y + 'г.'
             print(entry[r, c-1].text)
             print(num[0, r].text)
             k = 0
@@ -289,7 +338,7 @@ class MainApp(App):
                             f1.write(line)     
                             print('мы тут')               
             
-                label = Label(text='sotrudnik успешно сохранен!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
+                label = Label(text='часы успешно добавлены!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
                 popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
                 popupWindow.add_widget(label)
                 popupWindow.open()    
@@ -311,9 +360,9 @@ class MainApp(App):
         
         #lay.add_widget(laytop)
         lay.add_widget(laybutton)
-        lay.add_widget(lay0)
-        
+        lay.add_widget(lay0)        
         lay.add_widget(lay1)
+        lay.add_widget(lab1)
         
         return  lay
 
