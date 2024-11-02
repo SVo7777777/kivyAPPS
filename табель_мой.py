@@ -46,19 +46,23 @@ class MainApp(App):
         lay0 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, 1))
         lay0.set_bgcolor(0.8,.8,1,1)
         laytop= BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
-        lay1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .3))
+        lay1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .5))
         layoutgr= GridLayout(cols=1, spacing=0, size_hint=(1, None))
         layout_itog = GridLayout(cols=1, spacing=0, size_hint=(.2, 1))
         layout = GridLayout(rows=1,  spacing=0, size_hint_x=None)#, size_hint_x=None)       
-        copy = Button(text='', markup=True, font_size=28, size_hint=(1, 1), color=[1, 1, 0, 1])
+        copy = Button(text='обновить', markup=True, font_size=40, size_hint=(1, 1), color=[1, 1, 0, 1])
+        delete = Button(text='удалить всю \nинформацию', markup=True, font_size=35, size_hint=(1, 1), color=[1, 1, 0, 1])
         clear = Button(text='очистить', font_size=40, size_hint=(1, 1))        
         laybutton=BoxLayoutX(size_hint=(1, .3))
         laybutton.set_bgcolor(.8,.8,1,1)
-        lab1 = LabelX(halign="center", text='', font_size=50, size_hint=(1, .5), color=[0, 0 ,0, 1])
+        lab1 = LabelX(halign="center", text='Выберите год и месяц! Введите часы!\n Чтобы добавить, жмите на "+"! Обновите! ', font_size=40, size_hint=(1, .3), color=[0, 0 ,0, 1])
         lab1.set_bgcolor(.8,.8,1,1)        
         lay1.add_widget(copy)
         lay1.add_widget(clear)
-        clear.on_press = lambda: clear_all()        
+        lay1.add_widget(delete)
+        clear.on_press = lambda: clear_all()  
+        copy.on_press = lambda: vivod_sotrudnikov()   
+        delete.on_press = lambda: delete_all()      
         layoutgr.bind(minimum_height=layoutgr.setter('height'))
         layout.bind(minimum_width=layout.setter('width'))       
         today = datetime.datetime.now()
@@ -87,7 +91,29 @@ class MainApp(App):
         dropdownyear.bind(on_select=lambda instance, x: setattr(yearbutton, 'text', x))  
         laybutton.add_widget(mainbutton)    
         laybutton.add_widget(yearbutton) 
-        
+        def delete_all():
+            h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
+            an_layout = BoxLayout(orientation="horizontal", padding=1, size_hint=(1, 1))
+            label = Label(text='вы уверены, что хотите\nудалить всю информацию?', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])     
+            yes = Button(text='да', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)
+            no = Button(text='нет', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)        
+            an_layout.add_widget(yes)
+            an_layout.add_widget(no)
+            yes.on_press=lambda: (dele(), close(),clear_all())
+            no.on_press=lambda: (close())
+            def close():
+                popupWindow.dismiss()        
+            popupWindow = Popup(title="внимание!", size_hint=(None,None),size=(750,320), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
+            h_layout.add_widget(label)
+            h_layout.add_widget(an_layout)
+            popupWindow.add_widget(h_layout)
+            popupWindow.open()
+            def dele():
+                with open('tabel_sotrudnikov.txt', 'w'):
+                    label = Label(text='часы за все месяцы\nуспешно удалены!', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
+                    popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
+                    popupWindow.add_widget(label)
+                    popupWindow.open()                    
         def create_tabel():
             m=mainbutton.text
             y=yearbutton.text
@@ -101,10 +127,10 @@ class MainApp(App):
                                 k.write(m_y + ' ' + 'часы_2' + ' ' +  hours +'\n' )
                                 k.write(m_y + ' ' + 'часы_3' + ' ' +  hours +'\n' )
                                 label = Label(text='табель на ' + m_y + '\nуспешно создан!', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
-                                popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 50.0 / Window.width, 'y': 600.0 / Window.height})
+                                popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
                                 popupWindow.add_widget(label)
                                 popupWindow.open()                          
-            clear_all()
+            vivod_sotrudnikov()
             
         def clear_all():           
             yearbutton.text = 'выберите год'
@@ -183,7 +209,7 @@ class MainApp(App):
                         no.on_press=lambda: (clear_all(), close())
                         def close():
                             popupWindow.dismiss()        
-                        popupWindow = Popup(title="внимание!", size_hint=(None,None),size=(750,320), pos_hint={'x': 40.0 / Window.width, 'y': 600.0 / Window.height})
+                        popupWindow = Popup(title="внимание!", size_hint=(None,None),size=(750,320), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
                         h_layout.add_widget(label)
                         h_layout.add_widget(an_layout)
                         popupWindow.add_widget(h_layout)
@@ -289,7 +315,7 @@ class MainApp(App):
                     pass
                 else:
                     label = Label(text='часы успешно добавлены!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
-                    popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
+                    popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
                     popupWindow.add_widget(label)
                     popupWindow.open()    
         but = {} 
@@ -306,10 +332,11 @@ class MainApp(App):
         lay0.add_widget(root)# даты
         lay0.add_widget(layout_itog)
    
+        lay.add_widget(lab1)    
         lay.add_widget(laybutton)
         lay.add_widget(lay0)        
         lay.add_widget(lay1)
-        lay.add_widget(lab1)        
+            
         return  lay
 if __name__ == '__main__':
     MainApp().run()
