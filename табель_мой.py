@@ -37,7 +37,18 @@ class BoxLayoutX(BoxLayout):
     def update_rect(self, *args):
         self.rect.pos = self.pos
         self.rect.size = self.size     
-           
+
+class PopupX(Popup):
+    def __init__(self,text1,**kwargs):
+        super(PopupX,self).__init__(**kwargs)
+        label = Label(text=text1, font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
+        self.title='внимание!'
+        self.size_hint=(None,None)
+        self.size=(700,220)
+        self.pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height}
+        self.add_widget(label)
+        self.open()     
+                               
 class MainApp(App):
     def build(self):
         col1 = 0
@@ -110,10 +121,8 @@ class MainApp(App):
             popupWindow.open()
             def dele():
                 with open('tabel_sotrudnikov.txt', 'w'):
-                    label = Label(text='часы за все месяцы\nуспешно удалены!', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
-                    popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
-                    popupWindow.add_widget(label)
-                    popupWindow.open()                    
+                    popupWindow = PopupX('часы за все месяцы\nуспешно удалены!')
+                                                    
         def create_tabel():
             m=mainbutton.text
             y=yearbutton.text
@@ -125,11 +134,8 @@ class MainApp(App):
                                 k.write(m_y + ' ' + 'мои_часы' + ' ' +  hours +'\n' )
                                 k.write(m_y + ' ' + 'часы_1' + ' ' +  hours +'\n' )
                                 k.write(m_y + ' ' + 'часы_2' + ' ' +  hours +'\n' )
-                                k.write(m_y + ' ' + 'часы_3' + ' ' +  hours +'\n' )
-                                label = Label(text='табель на ' + m_y + '\nуспешно создан!', font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])      
-                                popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,220), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
-                                popupWindow.add_widget(label)
-                                popupWindow.open()                          
+                                k.write(m_y + ' ' + 'часы_3' + ' ' +  hours +'\n' )                           
+                                popupWindow = PopupX('табель на ' + m_y + '\nуспешно создан!')        
             vivod_sotrudnikov()
             
         def clear_all():           
@@ -231,7 +237,7 @@ class MainApp(App):
                            but[i, j].text = '' 
                         h_layout.add_widget(but[i, j])
                     else:
-                        entry[i, j] = LabelX(halign="center", font_size=50, size_hint=(1, 1),  color=[0, 0, 1, 1], width=50, text='часы_'+str(i-1))#multiline=False, cursor_color=[0, 0, 1, 1],                       
+                        entry[i, j] = LabelX(halign="center", font_size=45, size_hint=(1, 1),  color=[0, 0, 1, 1], width=50, text='часы_'+str(i-1))#multiline=False, cursor_color=[0, 0, 1, 1],                       
                         entry[i, j].set_bgcolor(1,1,1,1)
                         h_layout.add_widget(entry[i, j])
                         if j == 1:
@@ -270,7 +276,7 @@ class MainApp(App):
                             num[i,j].width=70                  
                 layout.add_widget(h_layout) 
             for i in range(5):                  
-                  itog[i] = LabelX(halign="right", height=61, width= 90, font_size=30, size_hint=(None, None), color=[1, 0 ,0, 1])
+                  itog[i] = LabelX(halign="right", height=61, width= 90, font_size=25, size_hint=(None, None), color=[1, 0 ,0, 1])
                   itog[i].set_bgcolor(1,1,1,1) 
                   layout_itog.add_widget(itog[i]) 
                   if i%2==0:
@@ -313,11 +319,8 @@ class MainApp(App):
                             f1.write(line)                                          
                 if m_y == 'выберите месяц выберите годг.' :
                     pass
-                else:
-                    label = Label(text='часы успешно добавлены!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
-                    popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
-                    popupWindow.add_widget(label)
-                    popupWindow.open()    
+                else:                      
+                    popupWindow = PopupX('часы успешно добавлены!')                   
         but = {} 
         entry = {}
         num = {}
@@ -335,8 +338,7 @@ class MainApp(App):
         lay.add_widget(lab1)    
         lay.add_widget(laybutton)
         lay.add_widget(lay0)        
-        lay.add_widget(lay1)
-            
+        lay.add_widget(lay1)            
         return  lay
 if __name__ == '__main__':
     MainApp().run()
