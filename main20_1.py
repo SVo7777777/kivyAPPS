@@ -10,6 +10,7 @@ from kivy.uix.textinput import TextInput
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle
 import datetime
+from kivy.clock import Clock
 from kivy.uix.dropdown import DropDown
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
@@ -35,7 +36,7 @@ class PopupX(Popup):
         self.title = 'внимание!'
         self.size_hint = (None, None)
         self.size = (700, 220)
-        self.pos_hint = {'x': 0.0 / Window.width, 'y': 500.0 / Window.height}
+        self.pos_hint = {'x': 0.0 / Window.width, 'y': 400.0 / Window.height}
         self.add_widget(label)
         self.open()
 
@@ -108,8 +109,8 @@ class SpisokScreen(Screen):
         self.layoutgr = GridLayout(cols=1, spacing=0, size_hint=(1, None))
         self.layoutgr.bind(minimum_height=self.layoutgr.setter('height'))
         self.layoutgr.bind(minimum_width=self.layoutgr.setter('width'))
-        lay_01 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
-        lay_0 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
+        lay_01 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .25))
+        lay_0 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .25))
         lay_1 = BoxLayout(orientation="vertical", padding=0, size_hint=(.5, 1))
         self.lay1 = LabelX(halign="center", text='', font_size=45, size_hint=(1, 1), color=[0, 0, 0, 1])
         self.lay1.set_bgcolor(.8, .8, 1, 1)
@@ -344,6 +345,27 @@ class SpisokScreen(Screen):
                                 self.entry[i, j].foreground_color = [0, 0, 0, 1]
                 self.layoutgr.add_widget(h_layout)
     
+    def pust(self,r):
+                        if len(self.entry) != self.k1+2:
+                            print('len(self.entry)=',len(self.entry))
+                            print('k1 =', self.k1)                                                      
+                        else:
+                            self.setka(r+1, r+2)
+                            self.manager.get_screen('tabel').setka(r, r+1)
+                            self.manager.get_screen('tabel').layout.clear_widgets()
+                            self.manager.get_screen('tabel').setka_dney(r+1)
+                            #self.add_widget(self.second)
+                        #self.rem_screen()
+                        #if f.read == '':
+                            #pass
+                            #self.manager.get_screen('tabel').setka(self.ks+1, self.ks+2)
+                        #self.manager.get_screen('tabel').setka(self.ks+1, self.ks+2)
+                        self.k1= self.k1+1
+                        Clock.unschedule(self.pust) 
+                        #self.manager.get_screen('tabel').layfor0.height = 45*self.k1+1
+                        #TabelScreen('tabel', r+2).setka(r+1, r+2)
+                        #self.manager.get_screen('tabel').entry[r, c - 1].text = self.sotrudnik
+                        
     def butt_add(self,i, j):
         #self.crsp = False
         self.but[i, j].on_press = lambda: add(i, j)
@@ -358,6 +380,7 @@ class SpisokScreen(Screen):
             print(data)
             self.sotrudnik = self.entry[r, c - 1].text
             self.lay1.text =  f'сотрудник\n  {self.entry[r, c - 1].text.upper()}\nдобавлен' 
+            
             # print(num[0, r].text)
             hours = ''
             for i in range(32):
@@ -370,26 +393,12 @@ class SpisokScreen(Screen):
                         if self.sotrudnik == '':
                             self.lay1.text = ''
                     else:
-                        if len(self.entry) != self.k1+2:
-                            print('len(self.entry)=',len(self.entry))
-                            print('k1 =', self.k1)                                                      
-                        else:
-                            self.setka(r+1, r+2)
-                            self.manager.get_screen('tabel').setka(r, r+1)
-                            self.manager.get_screen('tabel').layout.clear_widgets()
-                            self.manager.get_screen('tabel').setka_dney(r+1)
-                            #self.add_widget(self.second)
-                        #self.rem_screen()
-                        if f.read == '':
-                            pass
-                            #self.manager.get_screen('tabel').setka(self.ks+1, self.ks+2)
-                        #self.manager.get_screen('tabel').setka(self.ks+1, self.ks+2)
-                        self.k1= self.k1+1
-                        #TabelScreen('tabel', r+2).setka(r+1, r+2)
-                        #self.manager.get_screen('tabel').entry[r, c - 1].text = self.sotrudnik
                         with open('tabel_sotrudnikov.txt', 'a+') as k:
                             k.write(self.m_y + ' ' + self.sotrudnik + ' ' + hours + '\n')
                             popupWindow = PopupX(f'сотрудник {self.sotrudnik.upper()}\n успешно сохранен!')
+                        Clock.schedule_once(lambda t:self.pust(r), 1)
+                        
+                        
             else:
                 with open('tabel_sotrudnikov.txt', 'a+') as k:
                     k.write(self.m_y + ' ' + self.sotrudnik + ' ' + hours + '\n')
@@ -457,11 +466,12 @@ class TabelScreen(Screen):
         self.col1 = 0
         #self.setka(0, SpisokScreen('spisok',3).ks)
         lay = BoxLayout(orientation="vertical", padding=0, size_hint=(1, 1))
-        # layfor0 = GridLayout(cols=1, spacing=0, size_hint=(1, None))
-        self.lay0 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, 2))
+        self.layfor0 = GridLayout(cols=1, spacing=0,  height=945, size_hint=(1, None))
+        self.lay0 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, 1))
         self.lay0.set_bgcolor(.8, .8, 1, 1)
         laytop = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
-        lay1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
+        lay1 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, .575))
+        lay1.set_bgcolor(.8, .8, 1, 1)
         self.layoutgr = GridLayout(cols=1, spacing=0, size_hint=(1, 1))
         self.layout_itog = GridLayout(cols=1, spacing=0, size_hint=(.28, 1))
         self.layout = GridLayout(rows=1, spacing=0, size_hint=(None, 1))  # , size_hint_x=None)
@@ -485,7 +495,7 @@ class TabelScreen(Screen):
         copy.on_press = lambda: vivod_sotrudnikov()
         #tabel_viv.on_press = lambda: self.tabel_show()
         to_spisok.on_press = lambda: self.to_spisok_screen()
-        # layfor0.bind(minimum_height=layfor0.setter('height'))
+        self.layfor0.bind(minimum_height=self.layfor0.setter('height'))
         # layoutgr.bind(minimum_height=layoutgr.setter('height'))
         self.layout.bind(minimum_width=self.layout.setter('width'))
         today = datetime.datetime.now()
@@ -674,6 +684,7 @@ class TabelScreen(Screen):
             r = f.read()
             sp_all = r.splitlines()
             self.k = len(sp_all)
+            #self.layfor0.height = 45*self.k+2
             print(self.k)
             
         
@@ -682,17 +693,17 @@ class TabelScreen(Screen):
         
         root = ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
         root.add_widget(self.layout)
-        # root1= ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
-        # root1.add_widget(layoutgr)
+        root1= ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
+        root1.add_widget(self.layfor0)
 
         self.lay0.add_widget(self.layoutgr)  # список сотрудников
         self.lay0.add_widget(root)  # даты
         self.lay0.add_widget(self.layout_itog)
-        # layfor0.add_widget(lay0)
+        self.layfor0.add_widget(self.lay0)
 
         lay.add_widget(lab1)
         lay.add_widget(laybutton)
-        lay.add_widget(self.lay0)
+        lay.add_widget(root1)
         lay.add_widget(lay1)
         self.add_widget(lay)
 
