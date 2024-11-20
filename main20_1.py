@@ -115,13 +115,12 @@ class SpisokScreen(Screen):
         self.lay1 = LabelX(halign="center", text='', font_size=45, size_hint=(1, 1), color=[0, 0, 0, 1])
         self.lay1.set_bgcolor(.8, .8, 1, 1)
         self.lay1.text = 'Сегодня\n' + m_y1
-        hide = Button(text='скрыть список\nсотрудников', markup=True, font_size=28, size_hint=(1, 1),
-                      color=[1, 1, 0, 1])
+        hide = Button(text='скрыть список\nсотрудников', markup=True, font_size=28, size_hint=(1, 1),  color=[1, 1, 0, 1])
         show = Button(text='показать список\nсотрудников', font_size=28, size_hint=(1, 1))
         show_tabel = Button(text='перейти к \nтабелю', font_size=28, size_hint=(1, 1))
         b1 = Button(text='создать список', markup=True, font_size=28, size_hint=(1, 1), color=[1, 1, 0, 1])
         b2 = Button(text='какой сегодня \nмесяц', font_size=28, size_hint=(1, 1))
-        delete_all = Button(text='удалить\n всю \nинформацию', font_size=28, size_hint=(1, 1))
+        delete_all = Button(text='удалить\n всю \nинформацию', color=[1, 1, 0, 1], font_size=28, size_hint=(1, 1))
         lay_1.add_widget(self.lay1)
         lay_0.add_widget(show)
         lay_0.add_widget(hide)
@@ -134,13 +133,9 @@ class SpisokScreen(Screen):
         b2.on_press = lambda: show_month()
         show.on_press = lambda: self.show_spisok()
         hide.on_press = lambda: self.hide_spisok()
-        show_tabel.on_press = lambda: self.to_tabel_screen()
-        #delete_all.on_press=MainApp().get_running_app().restart()
+        show_tabel.on_press = lambda: self.to_tabel_screen()        
 
-        def create_spisok():
-            # global crsp, spisik_estj
-
-            # self.crsp = True
+        def create_spisok():            
             self.show_spisok()
             print(self.spisik_estj)
             with open("tabel_sotrudnikov.txt", "r") as f:
@@ -154,24 +149,12 @@ class SpisokScreen(Screen):
                             print(self.ks)
                             add(i, 2)
                         self.spisik_estj = True
-                        self.crsp = False
-                        label = Label(text='список на этот месяц \nуспешно  создан!!', font_size=42, size_hint=(1, 1),
-                                      color=[1, 0, 0, 1])
-                        popupWindow = Popup(title='внимание!', size_hint=(None, None), size=(700, 220),
-                                            pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
-                        popupWindow.add_widget(label)
-                        popupWindow.open()
-                    else:
-                        label = Label(text='список на этот  месяц уже \nсуществует!!', font_size=42, size_hint=(1, 1),
-                                      color=[1, 0, 0, 1])
-                        popupWindow = Popup(title='внимание!', size_hint=(None, None), size=(700, 220),
-                                            pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
-                        popupWindow.add_widget(label)
-                        popupWindow.open()
+                        self.crsp = False                        
+                        popupWindow = PopupX('список на этот месяц \nуспешно  создан!!')
+                    else:                        
+                        popupWindow = Popup('список на этот  месяц уже \nсуществует!!')
 
         def show_month():
-            # global spisik_estj
-
             today = datetime.datetime.now()
             data = today.strftime("%m-%y")
             month = {'01': 'январь', '02': 'февраль', '03': 'март', '04': 'апрель', '05': 'май', '06': 'июнь',
@@ -185,31 +168,17 @@ class SpisokScreen(Screen):
                 if r == '':
                     self.lay1.text = self.lay1.text + '\nвведите\nсотр-ов\nкак \nсказано\nвыше\n'
                 else:
-                    print('тут')
-                    # for line in lines:
-                    # print('месяц и год', m_y)
+                    print('тут')                    
                     if m_y in r:
-                        print(m_y)
-                        # print(line)
+                        print(m_y)                        
                         self.lay1.text = self.lay1.text + '\nсписок\nесть '
                         self.spisik_estj = True
                         self.crsp = False
-                        print(self.spisik_estj)
-                        # break
+                        print(self.spisik_estj)                        
                     else:
                         self.lay1.text = self.lay1.text + '\nсоздайте\nсписок\nна этот\nмесяц'
                         self.spisik_estj = False
-                        self.crsp = True
-                        # show_spisok()
-                        # break
-
-        
-
-        
-
-        
-
-        
+                        self.crsp = True                        
 
         self.but = {}
         self.entry = {}
@@ -220,14 +189,12 @@ class SpisokScreen(Screen):
             self.setka(self.col1,self.col2)
         root1 = ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
         root1.add_widget(self.layoutgr)
-
         lay0.add_widget(root1)  # список сотрудников
         lay0.add_widget(lay_1)
         lay.add_widget(label)
         lay.add_widget(lay0)
         lay.add_widget(lay_01)
         lay.add_widget(lay_0)
-
         self.show_spisok()
         print('len(self.entry)=',len(self.entry))
         print('k1 =', self.k1)
@@ -238,12 +205,9 @@ class SpisokScreen(Screen):
                 self.ks = len(f.read().splitlines())                             
             for i in range(self.ks+1):
                 self.entry[i + 1, 1].text = ''
-            
-
                 
     def butt_del(self, i, j):
-        self.but[i, j].on_press = lambda: delete(i, j)
-        
+        self.but[i, j].on_press = lambda: delete(i, j)      
         def delete(r, c):
             self.crsp = True
             sotrudnik = self.entry[r, c - 2].text
@@ -259,26 +223,21 @@ class SpisokScreen(Screen):
                 an_layout.add_widget(no)
                 yes.on_press = lambda: (dele(r, c), close())
                 no.on_press = lambda: (close())
-
                 def close():
                     popupWindow.dismiss()
-
                 popupWindow = Popup(title=f"Вы уверены, что хотите удалить '{sotrudnik.upper()}'? ", size_hint=(None, None), size=(400, 220),
                                     pos_hint={'x': 200.0 / Window.width, 'y': 800.0 / Window.height})
                 h_layout.add_widget(an_layout)
                 popupWindow.add_widget(h_layout)
                 popupWindow.open()
-
                 def dele(r, c):
                     print(str(r) + '-' + str(c))
-                    print(self.entry[r, c - 2].text)
-                    
+                    print(self.entry[r, c - 2].text)                    
                     for i in range(self.ks):
                         if self.entry[i + 1, 1].text == sotrudnik:
                             self.entry[i + 1, 1].text = ''
                     with open("tabel_sotrudnikov.txt", "r") as f:
-                        lines = f.readlines()
-                                 
+                        lines = f.readlines()                                
                         with open("tabel_sotrudnikov.txt", "w") as f:
                             for line in lines:
                                 if line.split()[2] != sotrudnik:
@@ -288,23 +247,12 @@ class SpisokScreen(Screen):
                     self.lay1.text =  f'сотрудник\n  {sotrudnik.upper()}\nудалён!'
                     self.hide_spisok()                    
                     self.show_spisok()
-
-            '''with open('tabel_sotrudnikov.txt', 'a+') as k:
-                k.write('\n' + sotrudnik)
-                sotrud[r] = sotrudnik
-                label = Label(text='sotrudnik успешно удалён!', font_size=42, size_hint=(1, .6), color=[1, 0, 0, 1])      
-                popupWindow = Popup(title='внимание!',  size_hint=(None,None),size=(700,120), pos_hint={'x': 50.0 / Window.width, 'y': 500.0 / Window.height})
-                popupWindow.add_widget(label)
-                popupWindow.open()  '''
                 
     def to_tabel_screen(self, *args):
-
         self.manager.transition.direction = 'left'
-        self.manager.current = 'tabel'  # selecting the screen by name (in this case by name "tabel")
-        #self.manager.get_screen('tabel').setka(0, self.ks+1)     
+        self.manager.current = 'tabel'       
         return 0
-        
-    
+          
     def setka(self,i1, i2):
             # для списка сотрудников
             for i in range(i1, i2):
@@ -331,8 +279,7 @@ class SpisokScreen(Screen):
                         h_layout.add_widget(self.but[i, j])
                     else:
                         self.entry[i, j] = TextInput(halign="center", cursor_color=[0, 0, 1, 1], font_size=45,
-                                                     size_hint=(1, 1), width=50, multiline=False)
-                        # entry[i, j].set_bgcolor(1,1,1,1)
+                                                     size_hint=(1, 1), width=50, multiline=False)                        
                         h_layout.add_widget(self.entry[i, j])
                         if j == 1:
                             self.entry[i, j].markup = True
@@ -353,39 +300,23 @@ class SpisokScreen(Screen):
                             self.setka(r+1, r+2)
                             self.manager.get_screen('tabel').setka(r, r+1)
                             self.manager.get_screen('tabel').layout.clear_widgets()
-                            self.manager.get_screen('tabel').setka_dney(r+1)
-                            #self.add_widget(self.second)
-                        #self.rem_screen()
-                        #if f.read == '':
-                            #pass
-                            #self.manager.get_screen('tabel').setka(self.ks+1, self.ks+2)
-                        #self.manager.get_screen('tabel').setka(self.ks+1, self.ks+2)
+                            self.manager.get_screen('tabel').setka_dney(r+1)                          
                         self.k1= self.k1+1
-                        Clock.unschedule(self.pust) 
-                        #self.manager.get_screen('tabel').layfor0.height = 45*self.k1+1
-                        #TabelScreen('tabel', r+2).setka(r+1, r+2)
-                        #self.manager.get_screen('tabel').entry[r, c - 1].text = self.sotrudnik
+                        Clock.unschedule(self.pust)                         
                         
     def butt_add(self,i, j):
-        #self.crsp = False
         self.but[i, j].on_press = lambda: add(i, j)
-
         def add(r, c):
             self.crsp = False
-            print(str(r) + '-' + str(c))
-            # print(entry[r, c-1].text)
-            
+            print(str(r) + '-' + str(c))                       
             today = datetime.datetime.now()
             data = today.strftime("%m-%y")
             print(data)
             self.sotrudnik = self.entry[r, c - 1].text
             self.lay1.text =  f'сотрудник\n  {self.entry[r, c - 1].text.upper()}\nдобавлен' 
-            
-            # print(num[0, r].text)
             hours = ''
             for i in range(32):
-                hours = hours + '-'
-                # sotrudnik =entry[r, c-1].text
+                hours = hours + '-'                
             if self.crsp == False:
                 with open('tabel_sotrudnikov.txt', 'r') as f:
                     if self.sotrudnik in f.read():
@@ -396,57 +327,31 @@ class SpisokScreen(Screen):
                         with open('tabel_sotrudnikov.txt', 'a+') as k:
                             k.write(self.m_y + ' ' + self.sotrudnik + ' ' + hours + '\n')
                             popupWindow = PopupX(f'сотрудник {self.sotrudnik.upper()}\n успешно сохранен!')
-                        Clock.schedule_once(lambda t:self.pust(r), 1)
-                        
-                        
+                        Clock.schedule_once(lambda t:self.pust(r), 1)                                                
             else:
                 with open('tabel_sotrudnikov.txt', 'a+') as k:
                     k.write(self.m_y + ' ' + self.sotrudnik + ' ' + hours + '\n')
     
-    def show_spisok(self):
-        # global ks
-        #sm.add_widget(TabelScreen('tabel', self.ks + 1))
+    def show_spisok(self):        
         with open('tabel_sotrudnikov.txt', 'r') as k:
             f = k.read()
             if f == '':
-                self.lay1.text = 'файл \nпустой' + '\nвведите\nсотр-ов\nкак \nсказано\nвыше\n'
-                if self.spisik_estj == False:
-                    pass
-                else:
-                    pass
-                    #self.setka(0 ,2)
-                self.z = 2
+                self.lay1.text = 'файл \nпустой' + '\nвведите\nсотр-ов\nкак \nсказано\nвыше\n' 
             else:
-                self.ks = 0
-                #self.setka(self.ks ,self.ks +1)
-                #self.show_sp = False
+                self.ks = 0            
                 sp_all = f.splitlines()
-                print(sp_all)
-               # s = sp_all[0].split()
+                print(sp_all)               
                 if self.show_sp == False:
-                        pass
-                else:
                     pass
+                else:                    
                     self.setka(self.ks ,self.ks +1)
-                    self.setka(self.ks+1 ,self.ks +2)
-                    #self.setka(self.ks+2 ,self.ks +3)
-                self.sotrud = []
-                #self.entry[1, 1].text = s[2]
-                # sotr = s[2]
-                #self.sotrud.append(s[2])
+                    self.setka(self.ks+1 ,self.ks +2)                    
+                self.sotrud = []                
                 for i in range(0, len(sp_all)):
                     if self.show_sp == False:
                         pass
-                    else:
-                        #self.setka(self.ks ,self.ks +1)
-                        #self.setka(self.ks+3 ,self.ks +4)
-                        self.setka(self.ks+2, self.ks +3)
-                        #self.setka(self.ks+2 ,self.ks +3)
-                        '''if len(sp_all) == 1:
-                            self.setka(self.ks+3 ,self.ks +4)
-                        if i == len(sp_all)-1:
-                            self.setka(self.ks+3 ,self.ks +4)'''
-                        
+                    else:                        
+                        self.setka(self.ks+2, self.ks +3)                                               
                     s = sp_all[i].split()
                     print(s)                  
                     if s[2] in self.sotrud:
@@ -458,13 +363,11 @@ class SpisokScreen(Screen):
                 self.lay1.text = 'всего\nчеловек:\n ' + str(self.ks)
                 self.show_sp = False
 
-
 class TabelScreen(Screen):
     def __init__(self, name,**kwargs):
         super(TabelScreen, self).__init__(**kwargs)
         self.name = name
-        self.col1 = 0
-        #self.setka(0, SpisokScreen('spisok',3).ks)
+        self.col1 = 0        
         lay = BoxLayout(orientation="vertical", padding=0, size_hint=(1, 1))
         self.layfor0 = GridLayout(cols=1, spacing=0,  height=945, size_hint=(1, None))
         self.lay0 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, 1))
@@ -475,28 +378,29 @@ class TabelScreen(Screen):
         self.layoutgr = GridLayout(cols=1, spacing=0, size_hint=(1, 1))
         self.layout_itog = GridLayout(cols=1, spacing=0, size_hint=(.28, 1))
         self.layout = GridLayout(rows=1, spacing=0, size_hint=(None, 1))  # , size_hint_x=None)
-        copy = Button(text='обновить', markup=True, font_size=35, size_hint=(.7, 1), color=[1, 1, 0, 1])
-        # delete = Button(text='', markup=True, font_size=35, size_hint=(1, 1), color=[1, 1, 0, 1])
+        copy = Button(text='обновить', markup=True, font_size=35, size_hint=(.7, 1), color=[1, 1, 0, 1])     
         to_spisok = Button(text='перейти  к\nсозданию списка', markup=True, font_size=35, size_hint=(1, 1),
                            color=[1, 1, 0, 1])
-        clear = Button(text='очистить', font_size=35, size_hint=(.7, 1))
-        tabel_viv = Button(text='вывести \nтабель', font_size=35, size_hint=(.7, 1))
+        clear = Button(text='очистить', font_size=35, size_hint=(.7, 1))        
         laybutton = BoxLayout(size_hint=(1, .16))
+        laybutton1= BoxLayout(size_hint=(1, .16))
+        but1 = Button(text='', markup=True, font_size=35, size_hint=(1, 1), color=[1, 1, 0, 1])
+        but2 = Button(text='', font_size=35, size_hint=(.7, 1))
+        but3 = Button(text='', markup=True, font_size=35, size_hint=(1, 1), color=[1, 1, 0, 1])
+        laybutton1.add_widget(but1)
+        laybutton1.add_widget(but2)      
+        laybutton1.add_widget(but3)                
         lab1 = LabelX(halign="center",
                       text='Выберите год и месяц! Введите часы!\n Чтобы добавить, жмите на "+"! Обновите! ',
                       font_size=35, size_hint=(1, .2), color=[0, 0, 0, 1])
         lab1.set_bgcolor(.8, .8, 1, 1)
         lay1.add_widget(copy)
-        lay1.add_widget(clear)
-        # delete_allay1.add_widget(delete)
-        lay1.add_widget(to_spisok)
-        #lay1.add_widget(tabel_viv)
+        lay1.add_widget(clear)      
+        lay1.add_widget(to_spisok)        
         clear.on_press = lambda: clear_all()
-        copy.on_press = lambda: vivod_sotrudnikov()
-        #tabel_viv.on_press = lambda: self.tabel_show()
+        copy.on_press = lambda: vivod_sotrudnikov()        
         to_spisok.on_press = lambda: self.to_spisok_screen()
-        self.layfor0.bind(minimum_height=self.layfor0.setter('height'))
-        # layoutgr.bind(minimum_height=layoutgr.setter('height'))
+        self.layfor0.bind(minimum_height=self.layfor0.setter('height'))    
         self.layout.bind(minimum_width=self.layout.setter('width'))
         today = datetime.datetime.now()
         print(today.isoweekday())
@@ -514,7 +418,6 @@ class TabelScreen(Screen):
                             size_hint=(1, 1))  # pos_hint: {"top": 1})
         self.mainbutton.bind(on_release=lambda btn: dropdown.open(btn))
         dropdown.bind(on_select=lambda instance, x: setattr(self.mainbutton, 'text', x))
-
         years = [int(y) - 2, int(y) - 1, int(y), int(y) + 1, int(y) + 2, int(y) + 3, int(y) + 4]
         for year in years:
             btn1 = Button(text=str(year), size_hint_y=None, size_hint_x=None, font_size=40, height=64, width=200)
@@ -537,35 +440,18 @@ class TabelScreen(Screen):
             an_layout.add_widget(no)
             yes.on_press = lambda: (dele(), close(), clear_all())
             no.on_press = lambda: (close())
-
             def close():
                 popupWindow.dismiss()
-
             popupWindow = Popup(title="внимание!", size_hint=(None, None), size=(750, 320),
                                 pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
             h_layout.add_widget(label)
             h_layout.add_widget(an_layout)
             popupWindow.add_widget(h_layout)
             popupWindow.open()
-
             def dele():
                 with open('tabel_sotrudnikov.txt', 'w'):
                     popupWindow = PopupX('часы за все месяцы\nуспешно удалены!')
-
-        '''def create_tabel():
-            m=mainbutton.text
-            y=yearbutton.text
-            m_y = m + ' ' + y + 'г.'
-            sp = ['СветаВ', 'АйнураЖ','АллаЧ','РозаФ','СашаВ','ВасилийД','НазарЧ','ЗакирШ','СергейК','ИгорьБ']
-            hours = ''
-            for i in range(31):              
-                hours = hours + '-'        
-            with open('tabel_sotrudnikov.txt', 'a+') as k:
-                                for chel in sp:
-                                    k.write(m_y + ' ' + chel + ' ' +  hours +'\n' )                                                        
-                                popupWindow = PopupX('табель на ' + m_y + '\nуспешно создан!')        
-            vivod_sotrudnikov()'''
-
+                    
         def clear_all():
             try:
                 self.yearbutton.text = 'выберите год'
@@ -580,8 +466,6 @@ class TabelScreen(Screen):
                             self.num[j, i].text = str(j + 1)
                             if j == 31:
                                 self.num[j, i].text = 'Итог'
-                #self.lay0.clear_widgets()
-                
             except KeyError:
                 pass
 
@@ -593,9 +477,7 @@ class TabelScreen(Screen):
             year = self.yearbutton.text
             data = month + ' ' + year + 'г.'
             print('data=', data)
-            j = 0
-            
-            
+            j = 0                       
             with open("tabel_sotrudnikov.txt", "r") as f:
                 r = f.read()
                 if r == '':
@@ -603,17 +485,12 @@ class TabelScreen(Screen):
                 else:
                     if year != 'выберите год' and month != 'выберите месяц':
                         py = year
-                        pm = month
-                        
+                        pm = month                       
                         with open('tabel_sotrudnikov.txt', 'r') as k:
-                            f = k.read()
-                            
+                            f = k.read()                           
                             if data in f:
                                 sp_all = f.splitlines()
-                                self.k = len(sp_all)
-                                #for z in range(len(sp_all), 21):
-                                    #self.entry[z, 1].text = ''
-                                    #self.itog[z].text = ''
+                                self.k = len(sp_all)                             
                                 if self.month_choose == False:
                                     for i in range(len(sp_all)):                                      
                                         s = sp_all[i].split()
@@ -649,9 +526,7 @@ class TabelScreen(Screen):
                                     clear_all()
                                     self.yearbutton.text = y
                                     self.mainbutton.text = m
-                                    vivod_sotrudnikov()
-                                '''for z in range(len(sp_all), 21):
-                                    self.entry[z, 1] = '' '''
+                                    vivod_sotrudnikov()                              
                             else:
                                 h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
                                 an_layout = BoxLayout(orientation="horizontal", padding=1, size_hint=(1, 1))
@@ -665,7 +540,6 @@ class TabelScreen(Screen):
                                 an_layout.add_widget(no)
                                 yes.on_press = lambda: (self.create_tabel(), close())
                                 no.on_press = lambda: (clear_all(), close())
-
                                 def close():
                                     popupWindow.dismiss()
                                 popupWindow = Popup(title="внимание!", size_hint=(None, None), size=(750, 320),
@@ -678,38 +552,29 @@ class TabelScreen(Screen):
         self.but = {}
         self.entry = {}
         self.num = {}
-        self.itog = {}
-       
+        self.itog = {}     
         with open("tabel_sotrudnikov.txt", "r") as f:
             r = f.read()
             sp_all = r.splitlines()
-            self.k = len(sp_all)
-            #self.layfor0.height = 45*self.k+2
-            print(self.k)
-            
-        
+            self.k = len(sp_all)            
+            print(self.k)                 
         self.setka(self.col1, self.k+1)
-        self.setka_dney(self.k+1)
-        
+        self.setka_dney(self.k+1)     
         root = ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
         root.add_widget(self.layout)
         root1= ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
         root1.add_widget(self.layfor0)
-
         self.lay0.add_widget(self.layoutgr)  # список сотрудников
         self.lay0.add_widget(root)  # даты
         self.lay0.add_widget(self.layout_itog)
         self.layfor0.add_widget(self.lay0)
-
         lay.add_widget(lab1)
         lay.add_widget(laybutton)
         lay.add_widget(root1)
         lay.add_widget(lay1)
+        lay.add_widget(laybutton1)
         self.add_widget(lay)
-
-    def tabel_show(self):
-        self.setka(self.col1, self.k+1)
-        self.setka_dney(self.k+1)
+            
     def setka(self, i1, i2):
         # для списка сотрудников
         for i in range(i1, i2):
@@ -741,9 +606,7 @@ class TabelScreen(Screen):
                             self.entry[i, j].text = 'Сотрудники'
                             self.entry[i, j].font_size = 38
                             self.entry[i, j].color = [0, 0, 1, 1]
-            self.layoutgr.add_widget(h_layout)
-        # для часов по дням в мeсяце
-        
+            self.layoutgr.add_widget(h_layout)      
         for i in range(i1, i2):
             self.itog[i] = LabelX(halign="right", height=45, width=130, font_size=35, size_hint=(1, None),
                              color=[1, 0, 0, 1])
@@ -756,10 +619,9 @@ class TabelScreen(Screen):
 
     def setka_dney(self,k):
         for i in range(32):
-            h_layout = BoxLayout(height=45 * k, orientation="vertical", size_hint=(None, None))  # height=794,
+            h_layout = BoxLayout(height=45 * k, orientation="vertical", size_hint=(None, None))  
             for j in range(0, k):
-                self.num[i, j] = TextInput(halign="center", cursor_color=[0, 0, 1, 1], font_size=30, size_hint=(1, 1),
-                                      width=60, multiline=False, text='')
+                self.num[i, j] = TextInput(halign="center", cursor_color=[0, 0, 1, 1], font_size=30, size_hint=(1, 1),    width=60, multiline=False, text='')
                 h_layout.add_widget(self.num[i, j])
                 if j == 0:
                     self.num[i, j].foreground_color = [0, 0, 1, 1]
