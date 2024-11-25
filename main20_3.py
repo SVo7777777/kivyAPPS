@@ -138,7 +138,13 @@ class SpisokScreen(Screen):
         print('len(self.entry)=',len(self.entry))
         print('k1 =', self.k1)
         self.add_widget(lay)  # I return the manager to work with him later
-                       
+    
+    def hide_spisok(self):
+            with open("tabel_sotrudnikov.txt", "r") as f:
+                self.ks = len(f.read().splitlines())                             
+            for i in range(self.ks+1):
+                self.entry[i + 1, 1].text = ''    
+                                
     def butt_del(self, i, j):
         self.but[i, j].on_press = lambda: delete(i, j)      
         def delete(r, c):
@@ -255,6 +261,11 @@ class SpisokScreen(Screen):
                 hours = hours + '-'                
             if self.crsp == False:
                 with open('tabel_sotrudnikov.txt', 'r') as f:
+                    lines = f.readlines()
+                    last_line = lines[-1]
+                    last = last_line.split()
+                    print(last)
+                    self.m_y = last[0] + ' ' + last[1]
                     if self.sotrudnik in f.read():
                         self.lay1.text = self.sotrudnik.upper()+ '\nв списке\nуже есть'
                         if self.sotrudnik == '':
