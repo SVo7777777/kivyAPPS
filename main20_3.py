@@ -55,16 +55,16 @@ class BoxLayoutX(BoxLayout):
 class MainApp(App):
     def build(self):        
         sm.add_widget(TabelScreen('tabel'))#self.ks + 1))
-        sm.add_widget(SpisokScreen('spisok',2))
+        sm.add_widget(SpisokScreen('spisok'))
         return sm
     
 
 class SpisokScreen(Screen):
-    def __init__(self, name, col2,**kwargs):
+    def __init__(self, name,**kwargs):
         super(SpisokScreen, self).__init__(**kwargs)
         self.name = name       
         self.col1 = 0
-        self.col2 = col2        
+        self.col2 = 2       
         today = datetime.datetime.now()
         data = today.strftime("%m-%y")
         month = {'01': 'январь', '02': 'февраль', '03': 'март', '04': 'апрель', '05': 'май', '06': 'июнь', '07': 'июль',
@@ -84,9 +84,7 @@ class SpisokScreen(Screen):
             r = f.read()
             if r == '':
                 self.spisik_estj = False
-            sp_all = r.splitlines()
-            
-            
+            sp_all = r.splitlines()         
             if self.m_y in r:
                 self.spisik_estj = True
                 self.show_sp = True   
@@ -300,13 +298,9 @@ class SpisokScreen(Screen):
                     self.setka(self.ks ,self.ks +1)
                     self.setka(self.ks+1 ,self.ks +2)                    
                 self.sotrud = []                
-                for i in range(0, len(sp_all)):
-                    if self.show_sp == False:
-                        pass
-                    else:                        
-                        pass #self.setka(self.ks+2, self.ks +3)                                               
+                for i in range(0, len(sp_all)):                                                         
                     s = sp_all[i].split()
-                    print(s)                  
+                    #print(s)                  
                     if s[2] in self.sotrud:
                         pass
                     else:    
@@ -353,8 +347,8 @@ class TabelScreen(Screen):
         lay1.add_widget(copy)
         lay1.add_widget(clear)      
         lay1.add_widget(self.to_spisok)        
-        clear.on_press = lambda: clear_all()
-        copy.on_press = lambda: vivod_sotrudnikov()        
+        clear.on_press = lambda: self.clear_all()
+        copy.on_press = lambda: self.vivod_sotrudnikov()        
         self.to_spisok.on_press = lambda: self.to_spisok_screen()
         self.layfor0.bind(minimum_height=self.layfor0.setter('height'))    
         self.layout.bind(minimum_width=self.layout.setter('width'))
@@ -368,7 +362,7 @@ class TabelScreen(Screen):
         for index in ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь',
                       'ноябрь', 'декабрь']:
             btn = Button(text=index, size_hint_y=None, size_hint_x=None, font_size=40, height=64, width=200)
-            btn.bind(on_release=lambda btn: (dropdown.select(btn.text), vivod_sotrudnikov()))
+            btn.bind(on_release=lambda btn: (dropdown.select(btn.text), self.vivod_sotrudnikov()))
             dropdown.add_widget(btn)
         self.mainbutton = Button(text='выберите месяц', font_size=40,
                             size_hint=(1, 1))  # pos_hint: {"top": 1})
@@ -377,7 +371,7 @@ class TabelScreen(Screen):
         years = [int(y) - 2, int(y) - 1, int(y), int(y) + 1, int(y) + 2, int(y) + 3, int(y) + 4]
         for year in years:
             btn1 = Button(text=str(year), size_hint_y=None, size_hint_x=None, font_size=40, height=64, width=200)
-            btn1.bind(on_release=lambda btn1: (dropdownyear.select(btn1.text), vivod_sotrudnikov()))
+            btn1.bind(on_release=lambda btn1: (dropdownyear.select(btn1.text), self.vivod_sotrudnikov()))
             dropdownyear.add_widget(btn1)
         self.yearbutton = Button(text='выберите год', font_size=40, size_hint=(1, 1))
         self.yearbutton.bind(on_release=lambda btn1: dropdownyear.open(btn1))
@@ -408,7 +402,37 @@ class TabelScreen(Screen):
                 with open('tabel_sotrudnikov.txt', 'w'):
                     popupWindow = PopupX('информация за все месяцы\nуспешно удалена!')
                     
-        def clear_all():
+        
+
+        self.but = {}
+        self.entry = {}
+        self.num = {}
+        self.itog = {}     
+        self.spisik_estj = False
+        #self.k = self.manager.get_screen('spisok').ks
+        self.to_spis()
+        #self.km = self.manager.get_screen('spisok').show_tabel.text#ks
+        #print(km)
+        self.k = SpisokScreen('spisok').ks    
+        print('SpisokScreen.ks=', self.k) 
+        self.setka(self.col1, self.k+1)
+        self.setka_dney(self.k+1)     
+        root = ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
+        root.add_widget(self.layout)
+        root1= ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
+        root1.add_widget(self.layfor0)
+        self.lay0.add_widget(self.layoutgr)  # список сотрудников
+        self.lay0.add_widget(root)  # даты
+        self.lay0.add_widget(self.layout_itog)
+        self.layfor0.add_widget(self.lay0)
+        lay.add_widget(lab1)
+        lay.add_widget(laybutton)
+        lay.add_widget(root1)
+        lay.add_widget(lay1)
+        lay.add_widget(laybutton1)
+        self.add_widget(lay)
+        
+    def clear_all(self):
             try:
                 self.yearbutton.text = 'выберите год'
                 self.mainbutton.text = 'выберите месяц'
@@ -424,8 +448,8 @@ class TabelScreen(Screen):
                                 self.num[j, i].text = 'Итог'
             except KeyError:
                 pass
-
-        def vivod_sotrudnikov():
+                
+    def vivod_sotrudnikov(self):
             mo = {'январь': '1', 'февраль': '2', 'март': '3', 'апрель': '4', 'май': '6', 'июнь': '6', 'июль': '7',
                   'август': '8', 'сентябрь': '9', 'октябрь': '10', 'ноябрь': '11', 'декабрь': '12'}
             day_week = {'1': 'пн', '2': 'вт', '3': 'ср', '4': 'чт', '5': 'пт', '6': 'сб', '7': 'вс'}
@@ -448,11 +472,11 @@ class TabelScreen(Screen):
                             f = k.read()                           
                             if data in f:
                                 sp_all = f.splitlines()
-                                self.k = len(sp_all)                             
+                                #self.k = len(sp_all)                             
                                 if self.month_choose == False:
                                     for i in range(len(sp_all)):                                      
                                         s = sp_all[i].split()
-                                        print(s)
+                                        #print(s)
                                         if data == s[0] + ' ' + s[1]:
                                             j = j + 1                                          
                                             self.entry[j, 1].text = s[2]
@@ -481,10 +505,10 @@ class TabelScreen(Screen):
                                 else:
                                     y = self.yearbutton.text
                                     m = self.mainbutton.text
-                                    clear_all()
+                                    self.clear_all()
                                     self.yearbutton.text = y
                                     self.mainbutton.text = m
-                                    vivod_sotrudnikov()                              
+                                    self.vivod_sotrudnikov()                              
                             else:
                                 self.spisik_estj == False
                                 h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
@@ -498,7 +522,7 @@ class TabelScreen(Screen):
                                 an_layout.add_widget(yes)
                                 an_layout.add_widget(no)
                                 yes.on_press = lambda: (self.create_spisok(), close())
-                                no.on_press = lambda: (clear_all(), close())
+                                no.on_press = lambda: (self.clear_all(), close())
                                 def close():
                                     popupWindow.dismiss()
                                 popupWindow = Popup(title="внимание!", size_hint=(None, None), size=(750, 320),
@@ -507,31 +531,6 @@ class TabelScreen(Screen):
                                 h_layout.add_widget(an_layout)
                                 popupWindow.add_widget(h_layout)
                                 popupWindow.open()
-
-        self.but = {}
-        self.entry = {}
-        self.num = {}
-        self.itog = {}     
-        self.spisik_estj = False
-        #self.k = self.manager.get_screen('spisok').ks
-        self.to_spis()
-        self.k = SpisokScreen('spisok',2).ks     
-        self.setka(self.col1, self.k+1)
-        self.setka_dney(self.k+1)     
-        root = ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
-        root.add_widget(self.layout)
-        root1= ScrollView(size_hint=(1, 1), size=(Window.width, Window.height))
-        root1.add_widget(self.layfor0)
-        self.lay0.add_widget(self.layoutgr)  # список сотрудников
-        self.lay0.add_widget(root)  # даты
-        self.lay0.add_widget(self.layout_itog)
-        self.layfor0.add_widget(self.lay0)
-        lay.add_widget(lab1)
-        lay.add_widget(laybutton)
-        lay.add_widget(root1)
-        lay.add_widget(lay1)
-        lay.add_widget(laybutton1)
-        self.add_widget(lay)
         
     def create_spisok(self):                                    
             with open("tabel_sotrudnikov.txt", "r") as f:
@@ -543,7 +542,7 @@ class TabelScreen(Screen):
                             print('self.k=', self.k)
                             self.manager.get_screen('spisok').add(i, 2, True)                                    
                         popupWindow = PopupX('список на этот месяц \nуспешно  создан!!')
-                        #self.vivod_sotrudnikov()                  
+                        self.vivod_sotrudnikov()                  
                         
     def  to_spis(self):
         with open("tabel_sotrudnikov.txt", "r") as f:
@@ -555,8 +554,7 @@ class TabelScreen(Screen):
                # self.spisik_estj == True
                 self.to_spisok.text = 'перейти к \nсписку'
             sp_all = r.splitlines()
-            #k1 = self.manager.get_screen('spisok').hide.text
-            #print(k1)
+            #SpisokScreen('spisok').show_spisok()    
             
             #print(self.k)     
                        
