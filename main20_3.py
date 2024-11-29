@@ -138,8 +138,9 @@ class SpisokScreen(Screen):
         self.add_widget(lay)  # I return the manager to work with him later
     
     def hide_spisok(self):
-            with open("tabel_sotrudnikov.txt", "r") as f:
-                self.ks = len(f.read().splitlines())                             
+            #with open("tabel_sotrudnikov.txt", "r") as f:
+                #self.ks = len(f.read().splitlines())      
+            self.show_sp = False                       
             for i in range(self.ks+1):
                 self.entry[i + 1, 1].text = ''    
                                 
@@ -260,10 +261,11 @@ class SpisokScreen(Screen):
             if self.crsp == False:
                 with open('tabel_sotrudnikov.txt', 'r') as f:
                     lines = f.readlines()
-                    last_line = lines[-1]
-                    last = last_line.split()
-                    print(last)
-                    self.m_y = last[0] + ' ' + last[1]
+                    if len(lines) != 0:
+                        last_line = lines[-1]
+                        last = last_line.split()
+                        print(last)
+                        self.m_y = last[0] + ' ' + last[1]
                     if self.sotrudnik in f.read():
                         self.lay1.text = self.sotrudnik.upper()+ '\nв списке\nуже есть'
                         if self.sotrudnik == '':
@@ -281,7 +283,11 @@ class SpisokScreen(Screen):
                 with open('tabel_sotrudnikov.txt', 'a+') as k:
                     k.write(self.m_y + ' ' + self.sotrudnik + ' ' + hours + '\n')
                 
-    
+    def col_chel(self):
+        k = self.ks
+        print('k in col_chel=', k)
+        return k
+        
     def show_spisok(self):        
         with open('tabel_sotrudnikov.txt', 'r') as k:
             f = k.read()
@@ -303,8 +309,9 @@ class SpisokScreen(Screen):
                     #print(s)                  
                     if s[2] in self.sotrud:
                         pass
-                    else:    
-                        self.setka(self.ks+2, self.ks +3)                            
+                    else:           
+                        if self.show_sp == True:             
+                            self.setka(self.ks+2, self.ks +3)                            
                         self.entry[self.ks + 1, 1].text = s[2]                     
                         self.sotrud.append(s[2])
                         self.ks = self.ks + 1
@@ -413,7 +420,7 @@ class TabelScreen(Screen):
         self.to_spis()
         #self.km = self.manager.get_screen('spisok').show_tabel.text#ks
         #print(km)
-        self.k = SpisokScreen('spisok').ks    
+        self.k = self.col_chel()#SpisokScreen('spisok').ks    
         print('SpisokScreen.ks=', self.k) 
         self.setka(self.col1, self.k+1)
         self.setka_dney(self.k+1)     
@@ -431,13 +438,34 @@ class TabelScreen(Screen):
         lay.add_widget(lay1)
         lay.add_widget(laybutton1)
         self.add_widget(lay)
+        print(self.col_chel())   
         
+    def col_chel(self):
+        with open('tabel_sotrudnikov.txt', 'r') as k1:
+            f = k1.read()
+            sp_all = f.splitlines()
+            self.k = 0
+            self.sotrud =[]
+            for i in range(0, len(sp_all)):                                                         
+                    s = sp_all[i].split()
+                    #print(s)                  
+                    if s[2] in self.sotrud:
+                        pass
+                    else:                                                     
+                        #self.entry[self.ks + 1, 1].text = s[2]                     
+                        self.sotrud.append(s[2])
+                        self.k = self.k + 1
+                #self.lay1.text = 'всего\nчеловек:\n ' + str(self.ks)
+            print('self.k=', self.k)
+        return self.k
+    
     def clear_all(self):
             try:
                 self.yearbutton.text = 'выберите год'
                 self.mainbutton.text = 'выберите месяц'
                 self.month_choose = False
                 for i in range(self.k):
+                    self.entry[i+1, 1].text = ''
                     self.itog[i + 1].text = ''
                     for j in range(32):
                         self.num[j, i + 1].text = ''
