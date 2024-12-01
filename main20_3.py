@@ -324,7 +324,12 @@ class TabelScreen(Screen):
     def __init__(self, name,**kwargs):
         super(TabelScreen, self).__init__(**kwargs)
         self.name = name
-        self.col1 = 0        
+        self.col1 = 0       
+        today = datetime.datetime.now()
+        data = today.strftime("%m-%y")
+        month = {'01': 'январь', '02': 'февраль', '03': 'март', '04': 'апрель', '05': 'май', '06': 'июнь', '07': 'июль',
+                 '08': 'август', '09': 'сентябрь', '10': 'октябрь', '11': 'ноябрь', '12': 'декабрь'}
+        self.m_y = month[data[0:2]] + ' 20' + data[3:5] + 'г.' 
         lay = BoxLayout(orientation="vertical", padding=0, size_hint=(1, 1))
         self.layfor0 = GridLayout(cols=1, spacing=0,  height=945, size_hint=(1, None))
         self.lay0 = BoxLayoutX(orientation="horizontal", padding=0, size_hint=(1, 1))
@@ -538,27 +543,30 @@ class TabelScreen(Screen):
                                     self.mainbutton.text = m
                                     self.vivod_sotrudnikov()                              
                             else:
-                                self.spisik_estj == False
-                                h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
-                                an_layout = BoxLayout(orientation="horizontal", padding=1, size_hint=(1, 1))
-                                label = Label(text='на ' + data + '  нет табеля!\nсоздать табель на ' + data + '?',
-                                              font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])
-                                yes = Button(text='да', halign="center", font_size=30, size_hint=(1, 1), width=160,
-                                             height=100)
-                                no = Button(text='нет', halign="center", font_size=30, size_hint=(1, 1), width=160,
-                                            height=100)
-                                an_layout.add_widget(yes)
-                                an_layout.add_widget(no)
-                                yes.on_press = lambda: (self.create_spisok(), close())
-                                no.on_press = lambda: (self.clear_all(), close())
-                                def close():
-                                    popupWindow.dismiss()
-                                popupWindow = Popup(title="внимание!", size_hint=(None, None), size=(750, 320),
-                                                        pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
-                                h_layout.add_widget(label)
-                                h_layout.add_widget(an_layout)
-                                popupWindow.add_widget(h_layout)
-                                popupWindow.open()
+                                if data == self.m_y:
+                                    self.spisik_estj == False
+                                    h_layout = BoxLayout(orientation="vertical", padding=1, size_hint=(1, 1))
+                                    an_layout = BoxLayout(orientation="horizontal", padding=1, size_hint=(1, 1))
+                                    label = Label(text='на ' + data + '  нет табеля!\nсоздать табель на ' + data + '?',
+                                                  font_size=42, size_hint=(1, 1), color=[1, 0, 0, 1])
+                                    yes = Button(text='да', halign="center", font_size=30, size_hint=(1, 1), width=160,
+                                                 height=100)
+                                    no = Button(text='нет', halign="center", font_size=30, size_hint=(1, 1), width=160,
+                                                height=100)
+                                    an_layout.add_widget(yes)
+                                    an_layout.add_widget(no)
+                                    yes.on_press = lambda: (self.create_spisok(), close())
+                                    no.on_press = lambda: (self.clear_all(), close())
+                                    def close():
+                                        popupWindow.dismiss()
+                                    popupWindow = Popup(title="внимание!", size_hint=(None, None), size=(750, 320),
+                                                            pos_hint={'x': 0.0 / Window.width, 'y': 500.0 / Window.height})
+                                    h_layout.add_widget(label)
+                                    h_layout.add_widget(an_layout)
+                                    popupWindow.add_widget(h_layout)
+                                    popupWindow.open()
+                                else:
+                                    popupWindow = PopupX('список на этот месяц \nнельзя  создать!!')
         
     def create_spisok(self):                                    
             with open("tabel_sotrudnikov.txt", "r") as f:
