@@ -362,6 +362,7 @@ class TabelScreen(Screen):
         clear.on_press = lambda: self.clear_all()
         copy.on_press = lambda: self.vivod_sotrudnikov()        
         self.to_spisok.on_press = lambda: self.to_spisok_screen()
+        but3.on_press = lambda: delete_all()
         self.layfor0.bind(minimum_height=self.layfor0.setter('height'))    
         self.layout.bind(minimum_width=self.layout.setter('width'))
         today = datetime.datetime.now()
@@ -400,7 +401,7 @@ class TabelScreen(Screen):
             no = Button(text='нет', halign="center", font_size=30, size_hint=(1, 1), width=160, height=100)
             an_layout.add_widget(yes)
             an_layout.add_widget(no)
-            yes.on_press = lambda: (dele(), close(), clear_all())
+            yes.on_press = lambda: (dele(), close(), self.clear_all())
             no.on_press = lambda: (close())
             def close():
                 popupWindow.dismiss()
@@ -566,7 +567,7 @@ class TabelScreen(Screen):
                                     popupWindow.add_widget(h_layout)
                                     popupWindow.open()
                                 else:
-                                    popupWindow = PopupX('список на этот месяц \nнельзя  создать!!')
+                                    popupWindow = PopupX('Можно создать список \nтолько на текущий  месяц, \nесли он не создан!!')
         
     def create_spisok(self):                                    
             with open("tabel_sotrudnikov.txt", "r") as f:
@@ -698,7 +699,7 @@ class TabelScreen(Screen):
                     if m_y == 'выберите месяц выберите годг.':
                         pass
                     else:
-                        popupWindow = PopupX('часы успешно добавлены!')
+                        popupWindow = PopupX(f'часы у {sotrudnik.upper()} \nуспешно добавлены!')
 
     def to_spisok_screen(self):
         self.manager.transition.direction = 'left'
