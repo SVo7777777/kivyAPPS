@@ -118,7 +118,7 @@ def  remove_all(t):
             for j in range(-1, -len(sp_all), -1):        
                 s = sp_all[j].split()              
                 if data.strip()== s[0].strip():
-                    k += 1
+                    k += 1                    
                     setka_history(j, j+1, s[0]+' '+s[1], s[2])
             layout0.add_widget(root_history)
             history_layout1.text = '[b]показать калькулятор[/b]'
@@ -127,7 +127,7 @@ def  remove_all(t):
             cl_all= False     
             activ_button2=False        
         else:      
-           for i in range(-1, -15, -1):
+           for i in range(-1, -k, -1):
                 try:
                     layout_history.remove_widget(h_layout2[i])
                 except KeyError:
