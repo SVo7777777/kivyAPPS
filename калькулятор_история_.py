@@ -29,7 +29,7 @@ quantity = Label(text='', font_size=22, size_hint=(.6, 1))#, color=[1, 0, 0, 1])
 price = Label(text='', font_size=22, size_hint=(.8, 1))#, color=[1, 0, 0, 1])
 cost = Label(text='', font_size=22, size_hint=(1, 1))#, color=[1, 0, 0, 1])
 clear_layout1 = Button(text='[b]скрыть кнопки[/b]', font_size=22, size_hint=(2, 1), markup=True)
-history_layout1 = Button(text='[b]история за текущий месяц[/b]', font_size=22, size_hint=(2, 1), markup=True)
+history_layout1 = Button(text='[b]история за сегодня [/b]', font_size=22, size_hint=(2, 1), markup=True)
 history_layout2 = Button( font_size=22, size_hint=(2.5, 1), markup=True)
 
 
@@ -96,7 +96,7 @@ def remove(t):
         else:
            layout0.add_widget(layout1)
            clear_layout1.text = '[b]скрыть кнопки[/b]'
-           history_layout1.text = '[b]история за текущий месяц[/b]'
+           history_layout1.text = '[b]история за сегодня [/b]'
            lay0.size_hint=(1, .13)
            cl_lay1 = True   
            activ_button1= True 
@@ -111,13 +111,13 @@ def  remove_all(t):
             layout0.remove_widget(layout1)
             layout0.remove_widget(root)
             now_chek = datetime.now()
-            data = now_chek.strftime("%m-%Y ")                    
+            data = now_chek.strftime("%d-%m-%Y ")                    
             with open('kalkulator.txt') as f:
                         lines = f.read()     
                         sp_all = lines.splitlines()                
             for j in range(-1, -len(sp_all), -1):        
                 s = sp_all[j].split()              
-                if data.strip()== s[0][3:10].strip():
+                if data.strip()== s[0].strip():
                     k += 1
                     setka_history(j, j+1, s[0]+' '+s[1], s[2])
             layout0.add_widget(root_history)
@@ -135,7 +135,7 @@ def  remove_all(t):
            layout0.remove_widget(root_history)       
            layout0.add_widget(root)
            layout0.add_widget(layout1)
-           history_layout1.text = '[b]история за текущий месяц[/b]'
+           history_layout1.text = '[b]история за сегодня [/b]'
            clear_layout1.text = '[b]скрыть кнопки[/b]'
            lay0.size_hint=(1, .13)
            activ_button2= True
@@ -145,21 +145,19 @@ h_layout2 = {}
 def setka_history(i1, i2, data, sum):  
     for i in range(i1, i2):
         h_layout2[i] = BoxLayout(height=60, size_hint=(None, None))
-        for j in range(3):
-            if j == 2:
-                but[i, j] = Button(text='', halign="center", font_size=28, size_hint=(None, None), height=60)
-                h_layout2[i].add_widget(but[i, j])
-            else:
-                entry[i, j] = LabelX(halign="center", font_size=30, size_hint=(None, None), height=60, width=250, color=[0, 0 ,0, 1])
+        for j in range(2):            
+                entry[i, j] = LabelX(halign="center", font_size=40, size_hint=(None, None), height=60, width=400, color=[0, 0 ,0, 1])
                 entry[i, j].set_bgcolor(1,1,1,1)
                 h_layout2[i].add_widget(entry[i, j])
                 if j%2==0:
                     entry[i, j].set_bgcolor(1,1,1,.8)
                 if j == 0:
-                    entry[i, j].text = data
-                    entry[i, j].width = 300
+                    entry[i, j].text = data                   
+                    entry[i, j].color=[0, 0 ,1, 1]
                 if j == 1:
                     entry[i, j].text = sum
+                    entry[i, j].color=[1, 0 ,0, 1]
+                    
                     
         layout_history.add_widget(h_layout2[i])
         
