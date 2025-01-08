@@ -44,7 +44,7 @@ class CalendarLayout(BoxLayout):
         self.layoutweek= GridLayout(cols=7, spacing=0, size_hint=(1, .057))
         layoutdata = BoxLayout(orientation="vertical", padding=0, size_hint=(1, .1))
         layoutdata1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
-        addbutton = Button(text='внести изменения', background_color= [.6,0,0.5,1],background_normal='',  font_size=40, size_hint=(1, 1))
+        addbutton = Button(text='внести \nизменения', background_color= [.6,0,0.5,1],background_normal='',  font_size=40, size_hint=(1, 1))
         
         self.sumprint = LabelX(color =[1,0,0,1], halign = 'right', font_size=50, size_hint=(1, 1))
         self.sumprint.set_bgcolor(1,0,1,.8)
@@ -54,7 +54,7 @@ class CalendarLayout(BoxLayout):
         layoutadd_sum.add_widget(addbutton)
         layoutadd_sum.add_widget(self.sumprint)
         
-        self.btnbottom = Button(text='', font_size=40, size_hint=(1, .2), background_normal='' , background_color= [1,1,1,1] )
+        self.btnbottom = Button(text='', font_size=40, size_hint=(1, .3),  background_color= [.8,0,.8,1] )
         current_year = datetime.datetime.now().year       
         days = monthrange(current_year, 3) [1]
         print(current_year)
@@ -95,6 +95,7 @@ class CalendarLayout(BoxLayout):
         self.lay1layout = {}  
         self.first = 0
         self.last = 0
+        self.strokajest = False 
         dropdown = DropDown(size_hint_y=1, size_hint_x=1, height=44, width=100)
         dropdownyear = DropDown(size_hint_y=1, size_hint_x=1, height=44, width=100)
         for index in self.month:                 
@@ -135,6 +136,7 @@ class CalendarLayout(BoxLayout):
         addbutton.bind(on_press=lambda ad: self.addchanges())    
             
     def clear(self):
+        self.strokajest = False
         self.layoutcalendar.clear_widgets()
         self.layoutcalendar.add_widget(self.layoutgr)
         if self.h_layout2 != {}:
@@ -159,8 +161,8 @@ class CalendarLayout(BoxLayout):
                 for line in lines:                     
                     if m_y  in line:          
                         st = line.split()   
-                        print(st)
-                        print(st[2])
+                        #print(st)
+                        #print(st[2])
                         h = st[2].split('-')
                         #print(h)
                         #print(len(h))
@@ -177,7 +179,8 @@ class CalendarLayout(BoxLayout):
                     pass  
         
         self.sumprint.text='всего часов: '+'\n'+str(k)
-            
+        
+           
     def addchanges(self):
         print('self.first=', self.first)
         hours = ''
@@ -187,7 +190,7 @@ class CalendarLayout(BoxLayout):
         for i in range(self.first, self.first+self.days):               
             try:
                k= k+float(self.entry[i].text)   
-               print(k)                                                            
+               #print(k)                                                            
             except ValueError:
                     pass  
                       
@@ -195,24 +198,26 @@ class CalendarLayout(BoxLayout):
             
         self.sumprint.text='всего часов: \n'+str(k)
         m_y =month + ' ' +year
-        stroka_s_chasami=m_y+ ' '+hours
+        stroka_s_chasami=m_y+ ' '+hours + '\n'
         print(stroka_s_chasami)
-        with open("tabel_.txt", "r") as f:
+        with open("tabel_.txt", "r") as f:                            
                     lines = f.readlines()        
-                    print(lines)        
-                    with open("tabel_.txt", "w") as f1:       
+                    print('lines=', lines)        
+                    with open("tabel_.txt", "a+") as f1:             
                         if lines == []:
-                                f1.write(m_y+' -----')                                     
-                        else:
-                            for line in lines:                     
-                                if m_y  in line:                            
-                                    new_line = m_y  + ' ' + hours + '\n'    
-                                    print('new_line=',new_line)                            
-                                    f1.write(new_line)    
-                                    print(new_line)
-                                else:
-                                    f1.write(line)       
-                                    print(line)                                                     
+                                f1.write('january 2025'+' -------------------------------\n')      
+                        else:                                   
+                                for line in lines:                     
+                                    if m_y  in line:        
+                                            self.strokajest = True                                                     
+                                            new_line = m_y  + ' ' + hours + '\n'    
+                                            print('new_line=',new_line)                            
+                                            f1.write(new_line)    
+                                            print(new_line)
+                                            break
+                        if self.strokajest == False:                              
+                            f1.write(stroka_s_chasami)       
+                            print(stroka_s_chasami)                                                     
     
     def vivod_calendar(self):     
         # Create the labels for the days of the week
