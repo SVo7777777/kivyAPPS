@@ -41,7 +41,7 @@ class CalendarLayout(BoxLayout):
         self. size_hint=(1, 1)
         self.layoutcalendar = BoxLayout(orientation="vertical", padding=0, size_hint=(1, 1))
         self.layoutgr= GridLayout(cols=7, spacing=0, size_hint=(1, 1))
-        self.layoutweek= GridLayout(cols=7, spacing=0, size_hint=(1, .057))
+        self.layoutweek= GridLayout(cols=7, spacing=0, size_hint=(1, .08))
         layoutdata = BoxLayout(orientation="vertical", padding=0, size_hint=(1, .1))
         layoutdata1 = BoxLayout(orientation="horizontal", padding=0, size_hint=(1, .2))
         addbutton = Button(text='внести \nизменения', background_color= [.6,0,0.5,1],background_normal='',  font_size=40, size_hint=(1, 1))
