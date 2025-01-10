@@ -20,13 +20,8 @@ class LabelX(Label):
                   size=self.update_rect)
     def update_rect(self, *args):
         self.rect.pos = self.pos
-        self.rect.size = self.size             
-    
+        self.rect.size = self.size                 
         
-class HoursAdd():
-    def hoursadd(self):
-        print('часы добавлены')
-
 class CalendarLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -100,7 +95,7 @@ class CalendarLayout(BoxLayout):
         dropdownyear = DropDown(size_hint_y=1, size_hint_x=1, height=44, width=100)
         for index in self.month:                 
             btn = Button(text=index, size_hint_y=None, size_hint_x=None, font_size=40, height=64, width=200, background_color=[.8,0,.8,1] )
-            btn.bind(on_release=lambda btn: (dropdown.select(btn.text), self.vivod_calendar(), self.vivod_chasov()))      
+            btn.bind(on_release=lambda btn: (dropdown.select(btn.text), self.vivod_calendar()))      
             dropdown.add_widget(btn)               
         self.mainbutton = Button(text = mon,  background_color= [.8,0,.8,1] , font_size=40, size_hint=(1, 1)) #pos_hint: {"top": 1})                
         self.mainbutton.bind(on_release=lambda btn: dropdown.open(btn)) 
@@ -109,7 +104,7 @@ class CalendarLayout(BoxLayout):
         years = [int(y)-2, int(y)-1, int(y), int(y)+1, int(y)+2, int(y)+3, int(y)+4]        
         for year in years:
             btn1= Button(text=str(year), background_color= [.8,0,.8,1] , size_hint_y=None, size_hint_x=None, font_size=40,height=64, width=200)
-            btn1.bind(on_release=lambda btn1: (dropdownyear.select(btn1.text), self.vivod_calendar(), self.vivod_chasov()))
+            btn1.bind(on_release=lambda btn1: (dropdownyear.select(btn1.text), self.vivod_calendar()))
             dropdownyear.add_widget(btn1)
         self.yearbutton = Button(text=y, background_color= [.8,0,.8,1] , font_size=40, size_hint=(1, 1))
         self.yearbutton.bind(on_release=lambda btn1: dropdownyear.open(btn1))
@@ -125,14 +120,14 @@ class CalendarLayout(BoxLayout):
                 self.layoutweek.add_widget(self.lay1layout[day])
         self.layoutcalendar.add_widget(self.layoutgr)
         self.vivod_calendar()
-        self.vivod_chasov()       
+        #self.vivod_chasov()       
         
         self.add_widget(layoutdata)
         self.add_widget(self.layoutweek)
         self.add_widget(self.layoutcalendar)
-        self.add_widget(layoutadd_sum)
+        #self.add_widget(layoutadd_sum)
         self.add_widget(self.btnbottom)
-        hours = HoursAdd()
+        
         addbutton.bind(on_press=lambda ad: self.addchanges())    
             
     def clear(self):
@@ -144,120 +139,34 @@ class CalendarLayout(BoxLayout):
                 self.layoutgr.remove_widget(self.lay1layout[day])
             for i in range(1,43):
                 self.layoutgr.remove_widget(self.h_layout2[i])
-                                        
-    def vivod_chasov(self):
-        year = self.yearbutton.text
-        month = self.mainbutton.text
-        m_y =month + ' ' +year
-        s = 0
-        k = 0
-        h = []
-        with open("tabel_.txt", "r") as f:
-            lines = f.readlines()        
-            print('vivod_calendar=', lines)     
-            if lines == []:
-                pass
-            else:
-                for line in lines:                     
-                    if m_y  in line:          
-                        st = line.split()   
-                        #print(st)
-                        #print(st[2])
-                        h = st[2].split('-')
-                        #print(h)
-                        #print(len(h))
-        for i in range(self.first, self.first+self.days):     
-            if h == []:
-                pass
-            else:
-                self.entry[i].text=h[s]
-                s += 1
-            try:
-               k= k+float(self.entry[i].text)   
-               print(k)                                                            
-            except ValueError:
-                    pass  
-        
-        self.sumprint.text='всего часов: '+'\n'+str(k)
-        
-           
-    def addchanges(self):
-        print('self.first=', self.first)
-        hours = ''
-        k = 0
-        year = self.yearbutton.text
-        month = self.mainbutton.text
-        for i in range(self.first, self.first+self.days):               
-            try:
-               k= k+float(self.entry[i].text)   
-               #print(k)                                                            
-            except ValueError:
-                    pass  
-                      
-            hours = hours+self.entry[i].text+'-'
-            
-        self.sumprint.text='всего часов: \n'+str(k)
-        m_y =month + ' ' +year
-        stroka_s_chasami=m_y+ ' '+hours + '\n'
-        print(stroka_s_chasami)
-        with open("tabel_.txt", "r") as f:                            
-                    lines = f.readlines()        
-                    print('lines=', lines)        
-                    with open("tabel_.txt", "a+") as f1:             
-                        if lines == []:
-                                f1.write('january 2025'+' -------------------------------\n')      
-                        else:                                   
-                                for line in lines:                     
-                                    if m_y  in line:        
-                                            self.strokajest = True                                                     
-                                            new_line = m_y  + ' ' + hours + '\n'    
-                                            print('new_line=',new_line)                            
-                                            f1.write(new_line)    
-                                            print(new_line)
-                                            break
-                        if self.strokajest == False:                              
-                            f1.write(stroka_s_chasami)       
-                            print(stroka_s_chasami)                                                     
-    
-    def vivod_calendar(self):     
-        # Create the labels for the days of the week
+                                                                               
+    def vivod_calendar(self):           
         self.clear()
         day3 = 1
         year = self.yearbutton.text
         month = self.mainbutton.text
-        m_y =month + ' ' +year
-        
-                        
-        if year != 'выберите год' and  month != 'выберите месяц':                                
-            
-    
-            # Add buttons for each day of the month
-            #day1 = datetime.datetime(int(year), int(month), 1)
-            day1 = datetime.datetime(int(year), int(self.mo[month]), 1)           
-            
+        m_y =month + ' ' +year                               
+        if year != 'выберите год' and  month != 'выберите месяц':                                            
+            day1 = datetime.datetime(int(year), int(self.mo[month]), 1)                     
             print('сегодня=', day1)
             weekend1 = day1.isoweekday()  
             print(weekend1)
             c = weekend1-2
             den_nedely = self.day_week[str(weekend1)]
             print(den_nedely)
-            for day in range(1, 43 ):
-                
-                
-                self.h_layout2[day] = BoxLayout(orientation="vertical",height=60, size_hint=(1, 1))
-                self.entry[day] = TextInput(halign="center", cursor_color=[0, 0, 1, 1], font_size=50,
-                                                     size_hint=(1, 1), foreground_color=[1,0,0,1], width=50, multiline=False)      
-                self.but[day] = LabelX(text='' ,  font_size = 65) 
+            for day in range(1, 43 ):                               
+                self.h_layout2[day] = BoxLayout(orientation="vertical",height=60, size_hint=(1, 1))                
+                self.but[day] = LabelX(text='' ,  font_size = 65, height=130, width=110, size_hint=(None, None)) 
                 self.but[day].set_bgcolor(1,1,1,1) 
                 #self.but[day].background_down=''
-                self.h_layout2[day].add_widget(self.but[day])
-                self.h_layout2[day].add_widget(self.entry[day])   
+                self.h_layout2[day].add_widget(self.but[day])                
                 self.layoutgr.add_widget(self.h_layout2[day])       
                 if day < weekend1:        
                     self.first = day+1
-                    self.h_layout2[day].remove_widget(self.entry[day])                              
-                    print(c)
+                    #self.h_layout2[day].remove_widget(self.entry[day])                              
+                    #print(c)
                     today = datetime.datetime.now()
+                    print('today=', today)
                     first = today.replace(day=1)
                     last_month = first - timedelta(days=1)
                     pred_month=last_month.strftime("%m")
@@ -266,7 +175,7 @@ class CalendarLayout(BoxLayout):
                     self.days = monthrange(current_year, int(pred_month)) [1]
                     print('дней в месяце=', self.days)
                     day0 = self.days-c
-                    print('day=', day)
+                    #print('day=', day)
                     self.but[day].text=str(day0)
                     self.but[day].color = [0, 0 ,0, .2]
                     c -= 1                                              
@@ -277,29 +186,28 @@ class CalendarLayout(BoxLayout):
                         data = now.strftime("%d ")
                         day2 =str(day-weekend1+1)
                         last = day-weekend1+1
-                        print('day2=',day2)
-                        print('data=', data[1:])
+                        #print('day2=',day2)
+                        #print('data=', data[0:])
+                        
                         weekend = day1.isoweekday()  
                         print(str(day-weekend1+1)+self.day_week[str(weekend)] )
                         if weekend == 6 or weekend == 7:                                                     
                             self.but[day].set_bgcolor(.4,.3,0,1)
-                            self.entry[day].background_color= [.6,0,0.5,1]
-                            self.entry[day].foreground_color = [1,1 ,1, 1]
+                            
                             self.but[day].text= str(day-weekend1+1)#+self.day_week[str(weekend)]        
                         else:   
                             self.but[day].color = [0, 0 ,0, 1]
                             self.but[day].set_bgcolor(.9,0,0.9,1)
                             self.but[day].text= str(day-weekend1+1)#+self.day_week[str(weekend)] 
-                        print('мы тут')
+                        #print('мы тут')
                        
-                        if int(day2) == int(data[1:]):
+                        if int(day2) == int(data[0:]):
                             print('совпало')
-                            self.but[day].background_color= [0,0,1,.8]
+                            self.but[day].set_bgcolor(0,1,0,1)
                             
-                    except ValueError:    
-                        
-                        self.h_layout2[day].remove_widget(self.entry[day])                    
-                        print('ValueError')                       
+                    except ValueError:                            
+                                          
+                        #print('ValueError')                       
                         self.but[day].text=str(day3)
                         self.but[day].color = [0, 0 ,0, .2]
                         day3 += 1
@@ -307,11 +215,7 @@ class CalendarLayout(BoxLayout):
                             self.but[day].set_bgcolor(1,1,1,.8)
                         if day == 41 or day == 42:
                             self.but[day].set_bgcolor(1,1,1,.8)
-                            
-                   
-                            
-                                                
-    
+                                                                                                                          
 class CalendarApp(App):
     def build(self):     
         return CalendarLayout()
